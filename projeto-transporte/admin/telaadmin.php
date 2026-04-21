@@ -1,84 +1,66 @@
 <?php
 include "telaadminback.php";
 ?>
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Contas - Tela do Administrador</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-    <link rel="stylesheet" href="../style.css">
+    <title>Painel do Administrador</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Seu CSS (depois do Bootstrap) -->
+    <link rel="stylesheet" href="../style.css?v=2">
 </head>
-<body>
-        <!--Inicio da barra nav pq sinceramente n sei organizar-->
-        <nav class="navbar navbar-expand-lg bg-body-tertiary bg-site" data-bs-theme="dark">
-        <div class="container-fluid">    
 
-            <ul class="nav justify-content-center">
-            
-            <li class="nav-item">
-                <a class="navbar-brand btn btn-primary btn-sm" href="../index.php">Voltar</a>
-            </li>
+<body class="bg-site">
 
-            <li class="nav-item">
-                <a class="navbar-brand btn btn-danger btn-sm" href="cadastro.php">Cadastrar nova conta</a>
-            </li>
-            
-            </ul>
-            <!--Fim da barra de nav -->
-        
-        </div>
-        </nav>
-    
-     <div class="container mt-4">
+<div class="container-admin">
 
-        <h2 class="mt-4">Contas Cadastradas:</h2>
-        <h5 class="mt-4">(A senha é alterada pelo usuário)</h5>
+    <img src="../logo.png" class="logo-topo">
 
-        <!-- TABELA -->
-         <div class="container">
-            <div class="card">
+    <div class="card-admin">
 
-                <div class="table-responsive mt-3">
-                    
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Email</th>
-                                <th>Opções</th>
-                            </tr>
-                        </thead>
-                        
-                        <tbody>
-                            
-                            <!--listador o que vai preencher a tela basicamente, a lista né no caso -->
-                            <?php foreach ($lista_contas as $conta): ?>
-                                <tr>
-                                    <td><?= $conta['login']; ?></td>
-                                    <td>
-                                        <a class="btn btn-primary btn-sm"
-                                        href="editar.php?id_usuario=<?= $conta['id_usuario']; ?>">
-                                        Editar Email
-                                    </a>
-                                    
-                                    <a class="btn btn-danger btn-sm"
-                                    href="deletar.php?id_usuario=<?= $conta['id_usuario']; ?>">
-                                    Deletar
-                                </a>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                    
-                </table>
+        <div class="admin-header">
+            <div>
+                <h1>Contas Cadastradas</h1>
+                <span class="sub">Gerencie os usuários do sistema</span>
             </div>
+
+            <a href="cadastro.php" class="btn-primary">
+                + Cadastrar Nova Conta
+            </a>
         </div>
 
-            </div>
-            
+        <div class="table-box">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>E-mail</th>
+                        <th style="text-align:right;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($lista_contas as $conta): ?>
+                    <tr>
+                        <td><?= $conta['login']; ?></td>
+                        <td class="actions">
+                            <a href="editar.php?id_usuario=<?= $conta['id_usuario']; ?>" class="btn-action edit">Editar</a>
+                            <a href="deletar.php?id_usuario=<?= $conta['id_usuario']; ?>" class="btn-action delete">Deletar</a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
-        
-    </body>
-    </html>
+
+        <div class="admin-footer">
+            <a href="../index.php" class="btn-secondary">← Voltar</a>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

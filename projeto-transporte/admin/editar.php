@@ -19,10 +19,10 @@ function busca_conta($conexao, $id) {
     <meta charset="UTF-8">
     <title>Editar Conta</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
 </head>
 
-<body>
+<body class="bg-site">
     <section class="h-100">
         <div class="container h-100">
             <div class="row justify-content-sm-center h-100">

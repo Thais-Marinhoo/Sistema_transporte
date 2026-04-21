@@ -8,37 +8,46 @@
 
 </head>
 
-<body>
-<form action="cadastroback.php" method="POST" class="needs-validation">
+<body class="bg-site">
 
+    
     <div class="container-login">
-        <div class="card-login">
-
-            <h1>Cadastro</h1>
+        
+        <div class="card-admin">
             
-            <form>
-                <label>E-mail</label>
-                <input type="email" id="login" name="login" required>
-                
-                <label>Senha</label>
-                <input type="password" id="senha" name="senha" required>
-            
-            <label>Confirme sua senha</label>
-            <input type="password" id="senha2" name="senha2">
-            
-            <button class="btn-login">Cadastrar</button>
-            
-            <br>
-            <div class="container-login">
-
-                <a class="navbar-brand btn btn-logout btn-sm" href="telaadmin.php">Voltar</a>
+            <div class="admin-header">
+                <div>
+                    <h1>Cadastrar nova conta</h1>
+                </div>
             </div>
-        </form>
+            
+            <div class="table-box">
+
+                <form action="cadastroback.php" method="POST" class="needs-validation">
+                    
+                    <label>E-mail</label>
+                    <input type="email" id="login" name="login" required>
+                    
+                    <label>Senha</label>
+                    <input type="password" id="senha" name="senha" required>
+                    
+                    <label>Confirme sua senha</label>
+                    <input type="password" id="senha2" name="senha2">
+                    
+                    <button class="btn-login">Cadastrar</button>
+                    
+                    <br>
+                    
+                     <div class="admin-footer">
+                        <a href="telaadmin.php" class="navbar-brand btn btn-logout btn-sm">← Voltar</a>
+                    </div>
+                    
+                </form>
+            </div>
         
         
     </div>
     </div>
-</form>
     
 </body>
 </html>
