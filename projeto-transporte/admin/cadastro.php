@@ -8,46 +8,37 @@
 
 </head>
 
-<body class="bg-site">
+<body>
+<form action="cadastroback.php" method="POST" class="needs-validation">
 
-    
     <div class="container-login">
-        
-        <div class="card-admin">
-            
-            <div class="admin-header">
-                <div>
-                    <h1>Cadastrar nova conta</h1>
-                </div>
-            </div>
-            
-            <div class="table-box">
+        <div class="card-login">
 
-                <form action="cadastroback.php" method="POST" class="needs-validation">
-                    
-                    <label>E-mail</label>
-                    <input type="email" id="login" name="login" required>
-                    
-                    <label>Senha</label>
-                    <input type="password" id="senha" name="senha" required>
-                    
-                    <label>Confirme sua senha</label>
-                    <input type="password" id="senha2" name="senha2">
-                    
-                    <button class="btn-login">Cadastrar</button>
-                    
-                    <br>
-                    
-                     <div class="admin-footer">
-                        <a href="telaadmin.php" class="navbar-brand btn btn-logout btn-sm">← Voltar</a>
-                    </div>
-                    
-                </form>
+            <h1>Cadastro</h1>
+            
+            <form>
+                <label>E-mail</label>
+                <input type="email" id="login" name="login" required>
+                
+                <label>Senha</label>
+                <input type="password" id="senha" name="senha" required>
+            
+            <label>Confirme sua senha</label>
+            <input type="password" id="senha2" name="senha2">
+            
+            <button class="btn-login">Cadastrar</button>
+            
+            <br>
+            <div class="container-login">
+
+                <a class="navbar-brand btn btn-logout btn-sm" href="telaadmin.php">Voltar</a>
             </div>
+        </form>
         
         
     </div>
     </div>
+</form>
     
 </body>
 </html>

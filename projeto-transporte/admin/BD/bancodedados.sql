@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS ponto (
     PRIMARY KEY (id_ponto) -- Corrigido para o ID da tabela
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS alunos (
+CREATE TABLE IF NOT EXISTS aluno (
     id_aluno INT NOT NULL AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     serie INT NOT NULL,
