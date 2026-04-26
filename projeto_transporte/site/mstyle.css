@@ -1,78 +1,102 @@
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+body{
+    margin:0;
+    font-family: 'Segoe UI', sans-serif;
+    background:#f4f6f9;
+}
+
+/* TOPO */
+.topbar{
+    height:70px;                 /* TRAVA a altura da navbar */
+    background: linear-gradient(90deg,#0b2c5f,#001b3d);
+    padding:0 40px;             /* remove padding vertical */
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    color:#fff;
+}
+
+.title{
+    font-size:22px;
+    font-weight:bold;
+}
+
+.yellow{
+    color:#ffc107;
+}
+
+.menu-links a{
+    color:#fff;
+    text-decoration:none;
+    margin-left:30px;
+    font-weight:500;
+}
+
+.menu-links a:hover{
+    border-bottom:3px solid #ffc107;
+}
+
+.logout{
+    color:#ffc107 !important;
+    font-weight:bold;
+}
+
+/* CONTEÚDO */
+.conteudo{
+    padding:40px;
+}
+
+.titulo{
+    font-size:42px;
+    margin-bottom:30px;
+}
+
+/* CARDS */
+.cards{
+    display:flex;
+    gap:20px;
+}
+
+.card-info{
+    flex:1;
+    background: linear-gradient(180deg,#0b2c5f,#001b3d);
+    border-radius:15px;
+    padding:25px;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    gap:20px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
+
+.icon{
+    font-size:50px;
+}
+
+/* MAPA */
+.mapa{
+    margin-top:40px;
+    background: linear-gradient(180deg,#0b2c5f,#001b3d);
+    padding:20px;
+    border-radius:15px;
+    height:400px;
 }
 
 
-.topo {
-    background-color: #0d1b3d;
-    color: white;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
+.card-info .material-icons{
+    font-size:64px !important;   /* deixa grande e bonito */
+    color:#ffc107 !important;    /* amarelo da logo */
+    line-height:1;
+}
+.logo-topo{
+    height:95px;
+    width:auto;
+    object-fit:contain;
+    transform: scaleX(1.3);  /* aumenta só pros lados */
+    transform-origin: center;
 }
 
-
-.menu {
-    width: 220px;
-    background: #eaeaea;
-    height: 100vh;
-    float: left;
-    padding: 15px;
-}
-
-
-.conteudo {
-    margin-left: 240px;
-    padding: 20px;
-}
-
-
-.cards {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
-.card {
-    background: #d9d9d9;
-    padding: 20px;
-    border-radius: 12px;
-    width: 200px;
-}
-
-.card h2 {
-    margin: 0;
-    font-size: 32px;
-}
-
-
-.mapa {
-    background: #ccc;
-    height: 320px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #555;
-}
-
-
-.btn {
-    display: block;
-    margin-top: 10px;
-    padding: 8px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.editar {
-    background: #9acd32;
-}
-
-.excluir {
-    background: #ff3b3b;
-    color: white;
+logo-area{
+    height:70px;
+    display:flex;
+    align-items:center;
 }
