@@ -1,0 +1,102 @@
+body{
+    margin:0;
+    font-family: 'Segoe UI', sans-serif;
+    background:#f4f6f9;
+}
+
+/* TOPO */
+.topbar{
+    height:70px;                 /* TRAVA a altura da navbar */
+    background: linear-gradient(90deg,#0b2c5f,#001b3d);
+    padding:0 40px;             /* remove padding vertical */
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    color:#fff;
+}
+
+.title{
+    font-size:22px;
+    font-weight:bold;
+}
+
+.yellow{
+    color:#ffc107;
+}
+
+.menu-links a{
+    color:#fff;
+    text-decoration:none;
+    margin-left:30px;
+    font-weight:500;
+}
+
+.menu-links a:hover{
+    border-bottom:3px solid #ffc107;
+}
+
+.logout{
+    color:#ffc107 !important;
+    font-weight:bold;
+}
+
+/* CONTEÚDO */
+.conteudo{
+    padding:40px;
+}
+
+.titulo{
+    font-size:42px;
+    margin-bottom:30px;
+}
+
+/* CARDS */
+.cards{
+    display:flex;
+    gap:20px;
+}
+
+.card-info{
+    flex:1;
+    background: linear-gradient(180deg,#0b2c5f,#001b3d);
+    border-radius:15px;
+    padding:25px;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    gap:20px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
+
+.icon{
+    font-size:50px;
+}
+
+/* MAPA */
+.mapa{
+    margin-top:40px;
+    background: linear-gradient(180deg,#0b2c5f,#001b3d);
+    padding:20px;
+    border-radius:15px;
+    height:400px;
+}
+
+
+.card-info .material-icons{
+    font-size:64px !important;   /* deixa grande e bonito */
+    color:#ffc107 !important;    /* amarelo da logo */
+    line-height:1;
+}
+.logo-topo{
+    height:95px;
+    width:auto;
+    object-fit:contain;
+    transform: scaleX(1.3);  /* aumenta só pros lados */
+    transform-origin: center;
+}
+
+logo-area{
+    height:70px;
+    display:flex;
+    align-items:center;
+}
