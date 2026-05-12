@@ -1,4 +1,3 @@
-
 // Quando clicar no botão, adiciona nova linha
 document.getElementById("btnAdd").addEventListener("click", function () {
 

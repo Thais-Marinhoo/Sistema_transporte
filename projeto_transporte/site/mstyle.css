@@ -580,5 +580,163 @@ body{
     .lista-campo-busca{
         width:100%;
     }
+ /* TELA ROTAS */
 
+}
+/* =========================
+   TELA ROTAS (ESTILO ORIGINAL RESTAURADO)
+========================= */
+
+.cadastro-container{
+    display:flex;
+    gap:20px;
+    align-items:flex-start;
+}
+
+/* CARD (MANTIDO COMO VOCÊ TINHA) */
+.rota-card{
+    background:#ffffff;
+    border-radius:15px;
+    padding:20px;
+    border:none;
+    margin-bottom:20px;
+    flex:1;
+    min-width:300px;
+}
+
+/* TITULO */
+.rota-card .card-title{
+    color:#0b1f3a;
+    font-weight:bold;
+    margin-bottom:20px;
+}
+
+/* LABEL */
+.rota-card label{
+    color:#0b1f3a;
+    font-weight:600;
+    display:block;
+    margin-top:10px;
+}
+
+/* INPUT E SELECT (MANTIDO SEU ESTILO ORIGINAL 30%) */
+.rota-card input,
+.rota-select{
+    width:30%;
+    height:45px;
+    border-radius:10px;
+    border:1px solid #ddd;
+    background:#f5f5f5;
+    padding-left:10px;
+    margin-top:5px;
+}
+
+/* BOTÃO SALVAR (MANTIDO 30%) */
+.btn-salvar{
+    width:30%;
+    background:#f2c230;
+    color:#0b1f3a;
+    font-weight:bold;
+    border:none;
+    border-radius:10px;
+    padding:12px;
+    margin-top:20px;
+    cursor:pointer;
+}
+
+/* BUSCA */
+.busca{
+    width:250px;
+    height:40px;
+    border-radius:8px;
+    border:1px solid #ddd;
+    padding-left:10px;
+}
+
+/* TABELA */
+.tabela-rotas{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.tabela-rotas th{
+    color:#0b1f3a;
+    text-align:left;
+    padding:12px;
+    border-bottom:2px solid #ddd;
+}
+
+.tabela-rotas td{
+    padding:12px;
+    border-bottom:1px solid #eee;
+    color:#333;
+}
+
+/* =========================
+   AÇÕES (NÃO MEXIDO VISUAL)
+========================= */
+
+.lista-acoes{
+    display:flex;
+    gap:10px;
+}
+
+.lista-btn-acao{
+    width:48px;
+    height:48px;
+    border:none;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+}
+
+.lista-btn-acao .material-icons{
+    font-size:22px;
+}
+
+.lista-btn-azul{
+    background:#e8f1ff;
+    color:#0b63ff;
+}
+
+.lista-btn-amarelo{
+    background:#fff4d6;
+    color:#d6a000;
+}
+
+/* =========================
+   PAGINAÇÃO (SEU PADRÃO ANTIGO RESTAURADO)
+========================= */
+
+.paginacao{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin-top:20px;
+    gap:8px;
+}
+
+.btn-pagina{
+    width:35px;
+    height:35px;
+    border-radius:8px;
+    border:1px solid #ddd;
+    background:#fff;
+    cursor:pointer;
+    font-weight:bold;
+    color:#0b1f3a;
+    transition:0.2s;
+}
+
+.btn-pagina:hover{
+    background:#f2c230;
+    border-color:#f2c230;
+}
+
+.btn-pagina.ativo{
+    background:#0b1f3a;
+    color:#fff;
+    border-color:#0b1f3a;
 }
