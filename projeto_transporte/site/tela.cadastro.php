@@ -44,7 +44,7 @@ document.querySelector("form")
     </h1>
 
     <!-- FORM COMEÇA -->
-    <form action="cadastroback.php" method="POST">
+    <form action="cadastrooback.php" method="POST">
 
         <table class="tabela-alunos" id="tabelaAlunos">
 
