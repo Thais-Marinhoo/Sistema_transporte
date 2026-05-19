@@ -58,7 +58,7 @@ document.querySelector("form")
 
                     <th>Curso</th>
 
-                    <th>Onde mora?</th>
+                    <th>Endereço</th>
 
                     <th class="coluna-acoes">
                         Ações

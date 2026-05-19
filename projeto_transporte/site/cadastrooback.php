@@ -19,7 +19,8 @@ for ($i = 0; $i < count($nomes); $i++) {
     $endereco = trim($enderecos[$i]);
 
     if ($nome == "" || $serie == "" || $curso == "" || $endereco == "") {
-        continue;
+        echo "<script>alert('Por favor, preencha todos os campos!'); window.location='tela.cadastro.php';</script>";
+        exit(); //verificar depois quando tiver tempo livre
     }
 
     // ESCAPA STRINGS (IMPORTANTE)
