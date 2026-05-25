@@ -1,9 +1,20 @@
 <?php
 session_start();
+
 if(!isset($_SESSION['email'])){
     header("Location: ../index.php");
     exit();
 }
+
+include '../conexao.php';
+
+/* PONTOS */
+$sql_pontos = "SELECT * FROM ponto ORDER BY id_ponto DESC";
+$result_pontos = mysqli_query($conexao, $sql_pontos);
+
+/* ÔNIBUS */
+$sql_onibus = "SELECT * FROM rota ORDER BY id_rota DESC";
+$result_onibus = mysqli_query($conexao, $sql_onibus);
 ?>
 
 <!DOCTYPE html>
@@ -12,10 +23,8 @@ if(!isset($_SESSION['email'])){
     <meta charset="UTF-8">
     <title>Rotas - Rota Certa</title>
 
-    <!-- CSS -->
     <link rel="stylesheet" href="mstyle.css">
 
-    <!-- Ícones -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
@@ -26,139 +35,264 @@ if(!isset($_SESSION['email'])){
 <div class="conteudo">
 
     <h1 class="titulo">Cadastro de Rotas</h1>
-    <p class="sub">Cadastre rotas e ônibus no sistema.</p>
+    <p class="sub">Gerencie pontos, ônibus e rotas do sistema.</p>
 
-    <!-- CONTAINER LADO A LADO -->
+    <!-- TOPO -->
     <div class="cadastro-container">
-
-        <!-- Cadastro Pontos -->
+  
+        <!-- CADASTRO PONTO -->
         <div class="rota-card">
-            <div class="card-body">
 
-                <h5 class="card-title">Cadastro de pontos</h5>
+            <h5 class="card-title">Cadastro de Ponto</h5>
+
+            <form method="POST" action="salvar_ponto.php">
+
+                <label>Número do ponto</label>
+                <input type="number" name="numero_ponto" placeholder="Digite o número">
 
                 <label>Nome do ponto</label>
-                <input type="text" placeholder="Digite o nome do ponto">
+                <input type="text" name="nome_ponto" placeholder="Digite o nome do ponto">
 
-                <button class="btn-salvar mt-4">
-                    Salvar Rota
+                <label>Endereço</label>
+                <input type="text" name="endereco" placeholder="Digite o endereço">
+
+                <button class="btn-salvar" type="submit">
+                    Salvar Ponto
                 </button>
 
-            </div>
+            </form>
+
         </div>
 
-        <!-- Cadastro Ônibus -->
+        <!-- CADASTRO ÔNIBUS -->
         <div class="rota-card">
-            <div class="card-body">
 
-                <h5 class="card-title">Cadastro de Ônibus</h5>
+            <h5 class="card-title">Cadastro de Ônibus</h5>
+
+            <form method="POST" action="salvar_onibus.php">
 
                 <label>Nome do motorista</label>
-                <input type="text" placeholder="Digite o nome">
+                <input type="text" name="motorista" placeholder="Digite o nome">
 
-                <label class="mt-3">Selecionar rota</label>
+                <label>Nome da rota</label>
+                <input type="text" name="rota" placeholder="Digite o nome da rota">
 
-                <select class="rota-select">
-                    <option>Selecione uma rota</option>
-                    <option>Rota Centro</option>
-                    <option>Rota Norte</option>
+              <label>Pontos por onde passa</label>
+
+<select class="rota-select" name="pontos">
+
+    <option selected disabled>
+        Selecione um ponto
+    </option>
+
+    <option>1 - Praça da Matriz</option>
+    <option>2 - Centro</option>
+    <option>3 - Rodoviária</option>
+    <option>4 - Escola</option>
+
+</select>
+
+                <label>Status do ônibus</label>
+                <input
+                    type="text"
+                    name="terceirizado"
+                    placeholder="Ex: Terceirizado ou Não"
+                >
+
+                <label>Turno</label>
+                <select class="rota-select" name="turno">
+                    <option>Manhã</option>
+                    <option>Tarde</option>
+                    <option>Integral</option>
                 </select>
 
-                <button class="btn-salvar mt-4">
+                <label>Ônibus passa APENAS pela manhã?</label>
+
+                <select class="rota-select" id="turnoManha">
+                    <option value="nao">Não</option>
+                    <option value="sim">Sim</option>
+                </select>
+
+                <!-- MOTORISTA SECUNDÁRIO -->
+
+                <div id="motoristaSecundario">
+
+                    <label>Nome do motorista secundário</label>
+
+                    <input
+                        type="text"
+                        name="motorista_secundario"
+                        placeholder="Digite o nome"
+                    >
+
+                    <label>Status do ônibus secundário</label>
+
+                    <input
+                        type="text"
+                        name="terceirizado_secundario"
+                        placeholder="Ex: Terceirizado ou Não"
+                    >
+
+                </div>
+
+                <button class="btn-salvar" type="submit">
                     Salvar Ônibus
                 </button>
 
-            </div>
+            </form>
+
         </div>
 
     </div>
 
-    <!-- TABELA -->
-    <div class="rota-card mt-4">
+    <!-- BUSCAR PONTO -->
+    <div class="rota-card">
 
-        <div class="card-body">
+        <div class="topo-tabela">
 
-            <div class="topo-tabela">
+            <h5 class="card-title">Buscar Ponto</h5>
 
-                <h5 class="card-title">
-                    Rotas Cadastradas
-                </h5>
-
-                <input
-                    class="busca"
-                    type="text"
-                    placeholder="Buscar rota ou motorista"
-                >
-
-            </div>
-
-            <table class="tabela-rotas">
-
-                <tr>
-                    <th>Rota</th>
-                    <th>Descrição</th>
-                    <th>Motorista</th>
-                    <th>Ações</th>
-                </tr>
-
-                <tr>
-                    <td>Rota Centro</td>
-                    <td>Centro e bairros próximos</td>
-                    <td>João Silva</td>
-                    <td>
-                        <div class="lista-acoes">
-
-                            <button class="lista-btn-acao lista-btn-azul" title="Visualizar">
-                                <span class="material-icons">visibility</span>
-                            </button>
-
-                            <button class="lista-btn-acao lista-btn-amarelo" title="Editar">
-                                <span class="material-icons">edit</span>
-                            </button>
-
-                        </div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Rota Norte</td>
-                    <td>Região norte da cidade</td>
-                    <td>Maria Souza</td>
-                    <td>
-                        <div class="lista-acoes">
-
-                            <button class="lista-btn-acao lista-btn-azul" title="Visualizar">
-                                <span class="material-icons">visibility</span>
-                            </button>
-
-                            <button class="lista-btn-acao lista-btn-amarelo" title="Editar">
-                                <span class="material-icons">edit</span>
-                            </button>
-
-                        </div>
-                    </td>
-                </tr>
-
-            </table>
-
-            <!-- PAGINAÇÃO PADRÃO LISTA ALUNOS -->
-            <div class="lista-paginacao">
-
-                <button>‹</button>
-
-                <button class="ativo">1</button>
-                <button>2</button>
-                <button>3</button>
-
-                <button>›</button>
-
-            </div>
+            <input
+                class="busca"
+                type="text"
+                placeholder="Buscar ponto"
+            >
 
         </div>
+
+        <table class="tabela-rotas">
+
+            <tr>
+                <th>Nº Ponto</th>
+                <th>Nome do Ponto</th>
+                <th>Endereço</th>
+                <th>Ações</th>
+            </tr>
+
+            <?php while($ponto = mysqli_fetch_assoc($result_pontos)) { ?>
+
+            <tr>
+
+                <td><?= $ponto['id_ponto'] ?></td>
+
+                <td><?= $ponto['nome_ponto'] ?></td>
+
+                <td>
+                    <?= isset($ponto['endereco']) ? $ponto['endereco'] : '--' ?>
+                </td>
+
+                <td>
+
+                    <div class="lista-acoes">
+
+                        <button class="lista-btn-acao lista-btn-azul">
+                           <span class="material-icons">delete</span>
+                        </button>
+
+                        <button class="lista-btn-acao lista-btn-amarelo">
+                            <span class="material-icons">edit</span>
+                        </button>
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+            <?php } ?>
+
+        </table>
+
+    </div>
+
+    <!-- ROTAS CADASTRADAS -->
+    <div class="rota-card">
+
+        <div class="topo-tabela">
+
+            <h5 class="card-title">Rotas Cadastradas</h5>
+
+        </div>
+
+        <table class="tabela-rotas">
+
+            <tr>
+                <th>Rota</th>
+                <th>Descrição</th>
+                <th>Motorista</th>
+                <th>Status</th>
+                <th>Turno</th>
+                <th>Ações</th>
+            </tr>
+
+            <?php while($bus = mysqli_fetch_assoc($result_onibus)) { ?>
+
+            <tr>
+
+                <td>
+                    <?= isset($bus['rota']) ? $bus['rota'] : '--' ?>
+                </td>
+
+                <td>
+                    <?= isset($bus['pontos']) ? $bus['pontos'] : '--' ?>
+                </td>
+
+                <td>
+                    <?= $bus['motoristas'] ?>
+                </td>
+
+                <td>
+                    <?= isset($bus['terceirizado']) ? $bus['terceirizado'] : '--' ?>
+                </td>
+
+                <td>
+                    <?= isset($bus['turno']) ? $bus['turno'] : '--' ?>
+                </td>
+
+                <td>
+
+                    <div class="lista-acoes">
+
+                        <button class="lista-btn-acao lista-btn-azul">
+                            <span class="material-icons">delete</span>
+                        </button>
+
+                        <button class="lista-btn-acao lista-btn-amarelo">
+                            <span class="material-icons">edit</span>
+                        </button>
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+            <?php } ?>
+
+        </table>
 
     </div>
 
 </div>
+
+<script>
+
+const turnoManha = document.getElementById('turnoManha');
+const motoristaSecundario = document.getElementById('motoristaSecundario');
+
+motoristaSecundario.style.display = 'none';
+
+turnoManha.addEventListener('change', function(){
+
+    if(this.value === 'sim'){
+        motoristaSecundario.style.display = 'block';
+    } else {
+        motoristaSecundario.style.display = 'none';
+    }
+
+});
+
+</script>
 
 </body>
 </html>
