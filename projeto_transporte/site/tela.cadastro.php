@@ -18,21 +18,12 @@ if(!isset($_SESSION['email'])){
         Cadastro Alunos - Rota Certa
     </title>
 
-    <link rel="stylesheet" href="mstyle.css">
+    <link rel="stylesheet" href="mstyle.css?v=999">
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 </head>
-<script>
 
-document.querySelector("form")
-.addEventListener("submit", function(){
-
-    alert("FORMULÁRIO ENVIADO");
-
-});
-
-</script>
 <body>
 
 <?php include 'menu.php'; ?>
@@ -43,7 +34,7 @@ document.querySelector("form")
         Cadastro de Alunos
     </h1>
 
-    <!-- FORM COMEÇA -->
+    <!-- FORM -->
     <form action="cadastrooback.php" method="POST">
 
         <table class="tabela-alunos" id="tabelaAlunos">
@@ -74,11 +65,13 @@ document.querySelector("form")
                 <tr class="linha-modelo" style="display:none;">
 
                     <td>
+
                         <input 
                             type="text"
                             name="nome[]"
                             required
                         >
+
                     </td>
 
                     <td>
@@ -161,7 +154,6 @@ document.querySelector("form")
 
             </div>
 
-            <!-- ADICIONAR -->
             <button 
                 type="button"
                 id="btnAdd"
@@ -172,7 +164,6 @@ document.querySelector("form")
 
             </button>
 
-            <!-- SALVAR -->
             <button 
                 type="submit"
                 class="btn-salvar"
@@ -185,10 +176,10 @@ document.querySelector("form")
         </div>
 
     </form>
-    <!-- FORM TERMINA -->
 
 </div>
 
-<script src="cadastro.js?v=99"></script>
+<script src="cadastro.js?v=999"></script>
+
 </body>
 </html>
