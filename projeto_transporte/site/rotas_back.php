@@ -103,16 +103,3 @@ function listarPontos($conexao) {
     $sql = "SELECT * FROM ponto ORDER BY numero_ponto ASC";
     return mysqli_query($conexao, $sql);
 }
-
-function listarRotas($conexao) {
-    $sql = "
-        SELECT r.*, 
-               GROUP_CONCAT(CONCAT(p.numero_ponto, ' - ', p.nome_ponto) ORDER BY rp.ordem SEPARATOR ' | ') as pontos_nomes 
-        FROM rota r 
-        LEFT JOIN rota_ponto rp ON r.id_rota = rp.id_rota 
-        LEFT JOIN ponto p ON rp.id_ponto = p.id_ponto 
-        GROUP BY r.id_rota 
-        ORDER BY r.id_rota DESC";
-    return mysqli_query($conexao, $sql);
-}
-?>
