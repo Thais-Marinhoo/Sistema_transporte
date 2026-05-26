@@ -67,9 +67,8 @@ if(!isset($_SESSION['email'])){
                     <td>
 
                         <input 
-                            type="text"
-                            name="nome[]"
-                            required
+                     type="text"
+                     name="nome[]"
                         >
 
                     </td>
@@ -78,9 +77,9 @@ if(!isset($_SESSION['email'])){
 
                         <select name="serie[]">
 
-                            <option value="1º">1º</option>
-                            <option value="2º">2º</option>
-                            <option value="3º">3º</option>
+                            <option value="1">1º</option>
+                            <option value="2">2º</option>
+                            <option value="3">3º</option>
 
                         </select>
 
@@ -90,13 +89,13 @@ if(!isset($_SESSION['email'])){
 
                         <select name="curso[]">
 
-                            <option value="Informática">
-                                Informática
-                            </option>
+                            <option value="Informatica">
+                             Informática
+                        </option>
 
-                            <option value="Desenvolvimento de Sistemas">
-                                Desenvolvimento de Sistemas
-                            </option>
+                        <option value="DS">
+                                 Desenvolvimento de Sistemas
+                                </option>
 
                         </select>
 
@@ -105,9 +104,8 @@ if(!isset($_SESSION['email'])){
                     <td>
 
                         <input 
-                            type="text"
-                            name="endereco[]"
-                            required
+                     type="text"
+                     name="endereco[]"
                         >
 
                     </td>
