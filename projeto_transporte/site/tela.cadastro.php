@@ -1,5 +1,6 @@
 <?php
 session_start();
+
 if(!isset($_SESSION['email'])){
     header("Location: ../index.php");
     exit();
@@ -10,83 +11,173 @@ if(!isset($_SESSION['email'])){
 <html lang="pt-br">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Cadastro Alunos - Rota Certa</title>
-    <!-- Seu CSS -->
-    <link rel="stylesheet" href="mstyle.css">
 
-    <!-- Ícones -->
+    <meta charset="UTF-8">
+
+    <title>
+        Cadastro Alunos - Rota Certa
+    </title>
+
+    <link rel="stylesheet" href="mstyle.css?v=999">
+
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+</head>
 
-<head>
+<body>
 
 <?php include 'menu.php'; ?>
 
 <div class="conteudo">
 
+    <h1 class="titulo">
+        Cadastro de Alunos
+    </h1>
 
-    <h1 class="titulo">Cadastro de Alunos </h1>
-
-    <form action="salvar_lote.php" method="POST">
+    <!-- FORM -->
+    <form action="cadastrooback.php" method="POST">
 
         <table class="tabela-alunos" id="tabelaAlunos">
-            <tr>
-                <th>Nome</th>
-                <th>Série</th>
-                <th>Curso</th>
-                <th>Onde mora?</th>
-            </tr>
 
-            <!-- LINHA MODELO -->
-            <tr class="linha-modelo">
-                <td><input type="text" name="nome[]" required></td>
+            <thead>
 
-                <td>
-                    <select name="serie[]">
-                        <option value="1">1º</option>
-                        <option value="2">2º</option>
-                        <option value="3">3º</option>
-                    </select>
-                </td>
+                <tr>
 
-                <td>
-                    <select name="curso[]">
-                        <option value="Info">Informática</option>
-                        <option value="DS">Desenvolvimento de Sistemas</option>
-                    </select>
-                </td>
+                    <th>Nome</th>
 
-                <td><input type="text" name="endereco[]" required></td>
-            </tr>
+                    <th>Série</th>
+
+                    <th>Curso</th>
+
+                    <th>Onde mora?</th>
+
+                    <th class="coluna-acoes">
+                        Ações
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="corpoTabela">
+
+                <!-- LINHA MODELO -->
+                <tr class="linha-modelo" style="display:none;">
+
+                    <td>
+
+                        <input 
+                     type="text"
+                     name="nome[]"
+                        >
+
+                    </td>
+
+                    <td>
+
+                        <select name="serie[]">
+
+                            <option value="1">1º</option>
+                            <option value="2">2º</option>
+                            <option value="3">3º</option>
+
+                        </select>
+
+                    </td>
+
+                    <td>
+
+                        <select name="curso[]">
+
+                            <option value="Informatica">
+                             Informática
+                        </option>
+
+                        <option value="DS">
+                                 Desenvolvimento de Sistemas
+                                </option>
+
+                        </select>
+
+                    </td>
+
+                    <td>
+
+                        <input 
+                     type="text"
+                     name="endereco[]"
+                        >
+
+                    </td>
+
+                    <td class="coluna-acoes">
+
+                        <div class="lista-acoes">
+
+                            <button 
+                                type="button"
+                                class="btn-remover"
+                            >
+
+                                Remover
+
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
         </table>
 
-        <br>
+        <!-- BOTÕES -->
+        <div class="topo-acoes">
 
-        <button type="button" id="btnAdd" class="btn-add">
-            + Adicionar linha
-        </button>
+            <div class="quantidade-box">
 
-        <button type="submit" class="btn-salvar">
-            Salvar todos
-        </button>
+                <label>
+                    Quantidade
+                </label>
 
-    
-       
+                <input 
+                    type="number"
+                    id="quantidadeLinhas"
+                    class="input-quantidade"
+                    min="1"
+                    value="1"
+                >
 
+            </div>
+
+            <button 
+                type="button"
+                id="btnAdd"
+                class="btn-add"
+            >
+
+                + Adicionar linhas
+
+            </button>
+
+            <button 
+                type="submit"
+                class="btn-salvar"
+            >
+
+                Salvar todos
 
             </button>
 
         </div>
 
-
     </form>
 
 </div>
 
-<!-- JS separado -->
-<script src="cadastro.js"></script>
+<script src="cadastro.js?v=999"></script>
 
 </body>
 </html>
-
