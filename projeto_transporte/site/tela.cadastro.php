@@ -8,22 +8,23 @@ if(!isset($_SESSION['email'])){
 
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <title>Cadastro Alunos - Rota Certa</title>
-
     <!-- Seu CSS -->
     <link rel="stylesheet" href="mstyle.css">
 
     <!-- Ícones -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-</head>
 
-<body>
+
+<head>
 
 <?php include 'menu.php'; ?>
 
 <div class="conteudo">
+
 
     <h1 class="titulo">Cadastro de Alunos </h1>
 
@@ -70,6 +71,15 @@ if(!isset($_SESSION['email'])){
             Salvar todos
         </button>
 
+    
+       
+
+
+            </button>
+
+        </div>
+
+
     </form>
 
 </div>
@@ -79,3 +89,4 @@ if(!isset($_SESSION['email'])){
 
 </body>
 </html>
+
