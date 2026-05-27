@@ -1,20 +1,14 @@
 <?php
-session_start();
+include 'rotas_back.php';
 
-if(!isset($_SESSION['email'])){
+
+if (!isset($_SESSION['email'])) {
     header("Location: ../index.php");
     exit();
 }
 
-include '../conexao.php';
-
-/* PONTOS */
-$sql_pontos = "SELECT * FROM ponto ORDER BY id_ponto DESC";
-$result_pontos = mysqli_query($conexao, $sql_pontos);
-
-/* ÔNIBUS */
-$sql_onibus = "SELECT * FROM rota ORDER BY id_rota DESC";
-$result_onibus = mysqli_query($conexao, $sql_onibus);
+$pontos = listarPontos($conexao);
+$rotas  = listarRotas($conexao);
 ?>
 
 <!DOCTYPE html>
@@ -22,9 +16,7 @@ $result_onibus = mysqli_query($conexao, $sql_onibus);
 <head>
     <meta charset="UTF-8">
     <title>Rotas - Rota Certa</title>
-
     <link rel="stylesheet" href="mstyle.css">
-
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
@@ -37,261 +29,156 @@ $result_onibus = mysqli_query($conexao, $sql_onibus);
     <h1 class="titulo">Cadastro de Rotas</h1>
     <p class="sub">Gerencie pontos, ônibus e rotas do sistema.</p>
 
-    <!-- TOPO -->
+    <!-- Mensagens -->
+    <?php if (isset($_GET['sucesso'])): ?>
+        <div class="alert alert-success"><?= htmlspecialchars($_GET['sucesso']) ?></div>
+    <?php endif; ?>
+    <?php if (isset($_GET['erro'])): ?>
+        <div class="alert alert-danger"><?= htmlspecialchars($_GET['erro']) ?></div>
+    <?php endif; ?>
+
     <div class="cadastro-container">
 
         <!-- CADASTRO PONTO -->
         <div class="rota-card">
-
             <h5 class="card-title">Cadastro de Ponto</h5>
-
-            <form method="POST" action="salvar_ponto.php">
-
+            <form method="POST" action="">
                 <label>Número do ponto</label>
-                <input type="number" name="numero_ponto" placeholder="Digite o número">
+                <input type="number" name="numero_ponto" placeholder="Digite o número" required>
 
                 <label>Nome do ponto</label>
-                <input type="text" name="nome_ponto" placeholder="Digite o nome do ponto">
+                <input type="text" name="nome_ponto" placeholder="Digite o nome do ponto" required>
 
                 <label>Endereço</label>
-                <input type="text" name="endereco" placeholder="Digite o endereço">
+                <input type="text" name="endereco" placeholder="Digite o endereço" required>
 
-                <button class="btn-salvar" type="submit">
-                    Salvar Ponto
-                </button>
-
+                <button class="btn-salvar" type="submit" name="salvar_ponto">Salvar Ponto</button>
             </form>
-
         </div>
 
         <!-- CADASTRO ÔNIBUS -->
         <div class="rota-card">
-
             <h5 class="card-title">Cadastro de Ônibus</h5>
-
-            <form method="POST" action="salvar_onibus.php">
+            <form method="POST" action="">
 
                 <label>Nome do motorista</label>
-                <input type="text" name="motorista" placeholder="Digite o nome">
+                <input type="text" name="motorista_m" placeholder="Digite o nome" required>
 
                 <label>Nome da rota</label>
-                <input type="text" name="rota" placeholder="Digite o nome da rota">
+                <input type="text" name="nome_rota" placeholder="Digite o nome da rota" required>
 
-              <label>Pontos por onde passa</label>
-
-<select class="rota-select" name="pontos">
-
-    <option selected disabled>
-        Selecione um ponto
-    </option>
-
-    <option>1 - Praça da Matriz</option>
-    <option>2 - Centro</option>
-    <option>3 - Rodoviária</option>
-    <option>4 - Escola</option>
-
-</select>
-
-                <label>Status do ônibus</label>
-                <input
-                    type="text"
-                    name="terceirizado"
-                    placeholder="Ex: Terceirizado ou Não"
-                >
-
-                <label>Turno</label>
-                <select class="rota-select" name="turno">
-                    <option>Manhã</option>
-                    <option>Tarde</option>
-                    <option>Integral</option>
+                <label>Pontos por onde passa <small>(Segure CTRL para associar mais de um ponto)</small></label>
+                <select name="pontos[]" class="rota-select" multiple size="6">
+                    <?php 
+                    mysqli_data_seek($pontos, 0);
+                    while ($ponto = mysqli_fetch_assoc($pontos)): ?>
+                        <option value="<?= $ponto['id_ponto'] ?>">
+                            <?= $ponto['numero_ponto'] ?> - <?= $ponto['nome_ponto'] ?>
+                        </option>
+                    <?php endwhile; ?>
                 </select>
 
-                <label>Ônibus passa APENAS pela manhã?</label>
+                <label>Status do ônibus</label>
+                <input type="text" name="status" placeholder="Ex: Terceirizado ou Não" required>
 
+                <label>Ônibus passa APENAS pela manhã?</label>
                 <select class="rota-select" id="turnoManha">
                     <option value="nao">Não</option>
                     <option value="sim">Sim</option>
                 </select>
 
-                <!-- MOTORISTA SECUNDÁRIO -->
-
-                <div id="motoristaSecundario">
-
+                <div id="motoristaSecundario" style="display: none;">
                     <label>Nome do motorista secundário</label>
-
-                    <input
-                        type="text"
-                        name="motorista_secundario"
-                        placeholder="Digite o nome"
-                    >
+                    <input type="text" name="motorista_t" placeholder="Digite o nome">
 
                     <label>Status do ônibus secundário</label>
-
-                    <input
-                        type="text"
-                        name="terceirizado_secundario"
-                        placeholder="Ex: Terceirizado ou Não"
-                    >
-
+                    <input type="text" name="terceirizado_secundario" placeholder="Ex: Terceirizado ou Não">
                 </div>
 
-                <button class="btn-salvar" type="submit">
-                    Salvar Ônibus
-                </button>
-
+                <button class="btn-salvar" type="submit" name="salvar_rota">Salvar Ônibus</button>
             </form>
-
         </div>
 
     </div>
 
-    <!-- BUSCAR PONTO -->
+    <!-- TABELA DE PONTOS -->
     <div class="rota-card">
-
-        <div class="topo-tabela">
-
-            <h5 class="card-title">Buscar Ponto</h5>
-
-            <input
-                class="busca"
-                type="text"
-                placeholder="Buscar ponto"
-            >
-
-        </div>
-
+        <h5 class="card-title">Pontos Cadastrados</h5>
         <table class="tabela-rotas">
-
             <tr>
                 <th>Nº Ponto</th>
                 <th>Nome do Ponto</th>
                 <th>Endereço</th>
                 <th>Ações</th>
             </tr>
-
-            <?php while($ponto = mysqli_fetch_assoc($result_pontos)) { ?>
-
+            <?php 
+            mysqli_data_seek($pontos, 0);
+            while ($ponto = mysqli_fetch_assoc($pontos)): ?>
             <tr>
-
-                <td><?= $ponto['id_ponto'] ?></td>
-
+                <td><?= $ponto['numero_ponto'] ?></td>
                 <td><?= $ponto['nome_ponto'] ?></td>
-
+                <td><?= $ponto['endereco'] ?></td>
                 <td>
-                    <?= isset($ponto['endereco']) ? $ponto['endereco'] : '--' ?>
+                    <a href="?deletar_ponto=<?= $ponto['id_ponto'] ?>" 
+                       class="btn-action delete"
+                       onclick="return confirm('Tem certeza que deseja excluir este ponto?')">
+                        🗑 Excluir
+                    </a>
                 </td>
-
-                <td>
-
-                    <div class="lista-acoes">
-
-                        <button class="lista-btn-acao lista-btn-azul">
-                           <span class="material-icons">delete</span>
-                        </button>
-
-                        <button class="lista-btn-acao lista-btn-amarelo">
-                            <span class="material-icons">edit</span>
-                        </button>
-
-                    </div>
-
-                </td>
-
             </tr>
-
-            <?php } ?>
-
+            <?php endwhile; ?>
         </table>
-
     </div>
 
-    <!-- ROTAS CADASTRADAS -->
+    <!-- TABELA DE ROTAS -->
+        <!-- ROTAS CADASTRADAS -->
     <div class="rota-card">
-
-        <div class="topo-tabela">
-
-            <h5 class="card-title">Rotas Cadastradas</h5>
-
-        </div>
-
+        <h5 class="card-title">Rotas Cadastradas</h5>
         <table class="tabela-rotas">
-
             <tr>
                 <th>Rota</th>
-                <th>Descrição</th>
-                <th>Motorista</th>
-                <th>Status</th>
-                <th>Turno</th>
+                <th>Motorista Principal</th>
+                <th>Motorista Secundário</th>
+                <th>Status Principal</th>
+                <th>Status Secundário</th>
+                <th>Pontos</th>
                 <th>Ações</th>
             </tr>
-
-            <?php while($bus = mysqli_fetch_assoc($result_onibus)) { ?>
-
+            <?php while ($rota = mysqli_fetch_assoc($rotas)): ?>
             <tr>
-
+                <td><?= $rota['nome_rota'] ?></td>
+                <td><?= $rota['motorista_m'] ?></td>
+                <td><?= $rota['motorista_t'] ?: '—' ?></td>
+                <td><?= $rota['status'] ?></td>
                 <td>
-                    <?= isset($bus['rota']) ? $bus['rota'] : '--' ?>
+                    <?= !empty($rota['status_secundario']) ? $rota['status_secundario'] : '<span style="color:#888;">Não há</span>' ?>
                 </td>
-
+                <td><?= $rota['pontos_nomes'] ?: 'Nenhum ponto' ?></td>
                 <td>
-                    <?= isset($bus['pontos']) ? $bus['pontos'] : '--' ?>
+                    <a href="?deletar_rota=<?= $rota['id_rota'] ?>" 
+                       class="btn-action delete"
+                       onclick="return confirm('Tem certeza que deseja excluir esta rota?')">
+                        🗑 Excluir
+                    </a>
                 </td>
-
-                <td>
-                    <?= $bus['motoristas'] ?>
-                </td>
-
-                <td>
-                    <?= isset($bus['terceirizado']) ? $bus['terceirizado'] : '--' ?>
-                </td>
-
-                <td>
-                    <?= isset($bus['turno']) ? $bus['turno'] : '--' ?>
-                </td>
-
-                <td>
-
-                    <div class="lista-acoes">
-
-                        <button class="lista-btn-acao lista-btn-azul">
-                            <span class="material-icons">delete</span>
-                        </button>
-
-                        <button class="lista-btn-acao lista-btn-amarelo">
-                            <span class="material-icons">edit</span>
-                        </button>
-
-                    </div>
-
-                </td>
-
             </tr>
-
-            <?php } ?>
-
+            <?php endwhile; ?>
         </table>
-
     </div>
 
 </div>
 
 <script>
-
 const turnoManha = document.getElementById('turnoManha');
 const motoristaSecundario = document.getElementById('motoristaSecundario');
 
-motoristaSecundario.style.display = 'none';
-
 turnoManha.addEventListener('change', function(){
-
     if(this.value === 'sim'){
         motoristaSecundario.style.display = 'block';
     } else {
         motoristaSecundario.style.display = 'none';
     }
-
 });
-
 </script>
 
 </body>
