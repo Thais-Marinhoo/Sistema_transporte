@@ -5,6 +5,8 @@ if(!isset($_SESSION['email'])){
     header("Location: ../index.php");
     exit();
 }
+
+include '../conexao.php';
 ?>
 
 <!DOCTYPE html>
@@ -36,7 +38,7 @@ if(!isset($_SESSION['email'])){
 
     <div class="lista-alunos-container">
 
-        <!-- TÍTULOS -->
+        <!-- TÍTULO -->
         <h1 class="lista-alunos-titulo">
             Lista de Alunos
         </h1>
@@ -135,17 +137,39 @@ if(!isset($_SESSION['email'])){
 
                 <tbody>
 
+                <?php
+
+                $sql = "SELECT * FROM aluno ORDER BY id_aluno DESC";
+
+                $resultado = mysqli_query($conexao, $sql);
+
+                while($aluno = mysqli_fetch_assoc($resultado)){
+
+                ?>
+
                     <tr>
 
-                        <td>Nayra Souza Silva</td>
-                        <td>1º</td>
-                        <td>Informática</td>
-                        <td>Centro</td>
+                        <td>
+                            <?php echo $aluno['nome']; ?>
+                        </td>
+
+                        <td>
+                            <?php echo $aluno['serie']; ?>
+                        </td>
+
+                        <td>
+                            <?php echo $aluno['curso']; ?>
+                        </td>
+
+                        <td>
+                            <?php echo $aluno['endereco']; ?>
+                        </td>
 
                         <td>
 
                             <div class="lista-acoes">
 
+                                <!-- VISUALIZAR -->
                                 <button class="lista-btn-acao lista-btn-azul">
 
                                     <span class="material-icons">
@@ -154,6 +178,7 @@ if(!isset($_SESSION['email'])){
 
                                 </button>
 
+                                <!-- EDITAR -->
                                 <button class="lista-btn-acao lista-btn-amarelo">
 
                                     <span class="material-icons">
@@ -168,71 +193,7 @@ if(!isset($_SESSION['email'])){
 
                     </tr>
 
-                    <tr>
-
-                        <td>Deyse Oliveira Santos</td>
-                        <td>3º</td>
-                        <td>Desenvolvimento de Sistemas</td>
-                        <td>Venâncio</td>
-
-                        <td>
-
-                            <div class="lista-acoes">
-
-                                <button class="lista-btn-acao lista-btn-azul">
-
-                                    <span class="material-icons">
-                                        visibility
-                                    </span>
-
-                                </button>
-
-                                <button class="lista-btn-acao lista-btn-amarelo">
-
-                                    <span class="material-icons">
-                                        edit
-                                    </span>
-
-                                </button>
-
-                            </div>
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td>Thaís Lima Rodrigues</td>
-                        <td>3º</td>
-                        <td>Desenvolvimento de Sistemas</td>
-                        <td>Cidade Nova</td>
-
-                        <td>
-
-                            <div class="lista-acoes">
-
-                                <button class="lista-btn-acao lista-btn-azul">
-
-                                    <span class="material-icons">
-                                        visibility
-                                    </span>
-
-                                </button>
-
-                                <button class="lista-btn-acao lista-btn-amarelo">
-
-                                    <span class="material-icons">
-                                        edit
-                                    </span>
-
-                                </button>
-
-                            </div>
-
-                        </td>
-
-                    </tr>
+                <?php } ?>
 
                 </tbody>
 
@@ -244,29 +205,13 @@ if(!isset($_SESSION['email'])){
         <div class="lista-rodape">
 
             <p>
-                Mostrando 1 a 5 de 25 alunos
+                Lista atualizada automaticamente
             </p>
 
             <div class="lista-paginacao">
 
                 <button>
                     1
-                </button>
-
-                <button class="ativo">
-                    2
-                </button>
-
-                <button>
-                    3
-                </button>
-
-                <button>
-                    4
-                </button>
-
-                <button>
-                    5
                 </button>
 
             </div>

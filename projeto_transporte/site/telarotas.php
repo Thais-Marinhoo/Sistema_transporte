@@ -67,7 +67,7 @@ $rotas  = listarRotas($conexao);
                 <label>Nome da rota</label>
                 <input type="text" name="nome_rota" placeholder="Digite o nome da rota" required>
 
-                <label>Pontos por onde passa <small>(Segure CTRL para associar mais de um ponto)</small></label>
+                <label>Pontos por onde passa <small>(Segure CTRL para vários)</small></label>
                 <select name="pontos[]" class="rota-select" multiple size="6">
                     <?php 
                     mysqli_data_seek($pontos, 0);
@@ -101,10 +101,14 @@ $rotas  = listarRotas($conexao);
 
     </div>
 
-    <!-- TABELA DE PONTOS -->
+    <!-- ====================== TABELA DE PONTOS ====================== -->
     <div class="rota-card">
         <h5 class="card-title">Pontos Cadastrados</h5>
-        <table class="tabela-rotas">
+        
+        <input type="text" id="buscaPonto" placeholder="🔎 Buscar ponto por nome ou endereço..." 
+               style="width:100%; padding:12px; margin-bottom:15px; border-radius:8px; border:1px solid #ddd;">
+
+        <table class="tabela-rotas" id="tabelaPontos">
             <tr>
                 <th>Nº Ponto</th>
                 <th>Nome do Ponto</th>
@@ -130,11 +134,14 @@ $rotas  = listarRotas($conexao);
         </table>
     </div>
 
-    <!-- TABELA DE ROTAS -->
-        <!-- ROTAS CADASTRADAS -->
+    <!-- ====================== TABELA DE ROTAS ====================== -->
     <div class="rota-card">
         <h5 class="card-title">Rotas Cadastradas</h5>
-        <table class="tabela-rotas">
+        
+        <input type="text" id="buscaRota" placeholder="🔎 Buscar por rota, motorista ou ponto..." 
+               style="width:100%; padding:12px; margin-bottom:15px; border-radius:8px; border:1px solid #ddd;">
+
+        <table class="tabela-rotas" id="tabelaRotas">
             <tr>
                 <th>Rota</th>
                 <th>Motorista Principal</th>
@@ -150,9 +157,7 @@ $rotas  = listarRotas($conexao);
                 <td><?= $rota['motorista_m'] ?></td>
                 <td><?= $rota['motorista_t'] ?: '—' ?></td>
                 <td><?= $rota['status'] ?></td>
-                <td>
-                    <?= !empty($rota['status_secundario']) ? $rota['status_secundario'] : '<span style="color:#888;">Não há</span>' ?>
-                </td>
+                <td><?= !empty($rota['status_tarde']) ? $rota['status_tarde'] : '<span style="color:#888;">Não há</span>' ?></td>
                 <td><?= $rota['pontos_nomes'] ?: 'Nenhum ponto' ?></td>
                 <td>
                     <a href="?deletar_rota=<?= $rota['id_rota'] ?>" 
@@ -169,6 +174,27 @@ $rotas  = listarRotas($conexao);
 </div>
 
 <script>
+// Busca em Pontos
+document.getElementById('buscaPonto').addEventListener('keyup', function() {
+    let filtro = this.value.toLowerCase();
+    let linhas = document.querySelectorAll('#tabelaPontos tr');
+    for(let i = 1; i < linhas.length; i++) {
+        let texto = linhas[i].textContent.toLowerCase();
+        linhas[i].style.display = texto.includes(filtro) ? '' : 'none';
+    }
+});
+
+// Busca em Rotas
+document.getElementById('buscaRota').addEventListener('keyup', function() {
+    let filtro = this.value.toLowerCase();
+    let linhas = document.querySelectorAll('#tabelaRotas tr');
+    for(let i = 1; i < linhas.length; i++) {
+        let texto = linhas[i].textContent.toLowerCase();
+        linhas[i].style.display = texto.includes(filtro) ? '' : 'none';
+    }
+});
+
+// Mostrar/esconder motorista secundário
 const turnoManha = document.getElementById('turnoManha');
 const motoristaSecundario = document.getElementById('motoristaSecundario');
 
