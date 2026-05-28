@@ -11,7 +11,7 @@ $email = mysqli_real_escape_string($conexao, $_POST['email']);
 $senha = mysqli_real_escape_string($conexao, $_POST['senha']);
 
 // AGORA SÓ BUSCA NA TABELA USERS
-$query_user = "SELECT id_usuario, login FROM users WHERE login = '$email' AND senha = MD5('$senha')";
+$query_user = "SELECT id_usuario, login FROM users WHERE login = '$email' AND senha = SHA2('$senha', 256)";
 $result_user = mysqli_query($conexao, $query_user);
 
 if (mysqli_num_rows($result_user) == 1) {
