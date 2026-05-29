@@ -20,8 +20,47 @@ if (isset($_POST['salvar_ponto'])) {
         exit();
     }
 
-    $stmt = $conexao->prepare("INSERT INTO ponto (numero_ponto, nome_ponto, endereco) VALUES (?, ?, ?)");
-    $stmt->bind_param("iss", $numero_ponto, $nome_ponto, $endereco);
+///////////////////////////////////////////////////////////////////////////////////////////////////////    
+// ... (Seu código existente recebe as variáveis do formulário, ex: $endereco = $_POST['endereco'];)
+
+// 1. Prepara o endereço garantindo que a busca foque em Crateús
+$endereco_filtrado = $endereco . ", Crateús, Ceará, Brasil";
+
+// ... seu código de preparar o endereço filtrado ...
+
+$url_api = "https://nominatim.openstreetmap.org/search?q=" . urlencode($endereco_filtrado) . "&format=json&limit=1";
+
+// Nova forma de disparar usando cURL (ignora travas do file_get_contents no Windows)
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url_api);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_USERAGENT, "SistemaTransporteCrateus/1.0 (heitor.almeida2@aluno.ce.gov.br)");
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Ignora erros de certificado SSL locais do XAMPP
+
+$resposta_texto = curl_exec($ch);
+curl_close($ch);
+
+$resultado_dados = json_decode($resposta_texto, true);
+
+// 6. Verifica se a API encontrou o local com sucesso
+if (!empty($resultado_dados) && isset($resultado_dados[0]['lat'])) {
+    
+    // Sucesso! Aqui estão as duas variáveis numéricas prontinhas que você precisava
+    $latitude = (float) $resultado_dados[0]['lat'];
+    $longitude = (float) $resultado_dados[0]['lon'];
+    
+    // ... (A partir daqui você coloca o seu código de INSERT no banco de dados)
+    // Exemplo: usar $latitude e $longitude na sua query do banco.
+
+} else {
+    // Caso o endereço digitado seja inválido ou inexistente em Crateús
+    echo "Erro: Não conseguimos localizar as coordenadas para o endereço digitado. Verifique a ortografia.";
+    exit; // Interrompe para não salvar dados vazios no banco
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    $stmt = $conexao->prepare("INSERT INTO ponto (numero_ponto, nome_ponto, endereco, latitude, longitude) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("issdd", $numero_ponto, $nome_ponto, $endereco, $latitude, $longitude);
 
     if ($stmt->execute()) {
         header("Location: telarotas.php?sucesso=Ponto cadastrado com sucesso!");
