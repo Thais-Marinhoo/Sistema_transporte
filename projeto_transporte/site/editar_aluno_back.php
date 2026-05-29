@@ -1,4 +1,4 @@
-```php
+
 <?php
 
 session_start();
@@ -89,4 +89,4 @@ header("Location: lista.alunos.php");
 exit();
 
 ?>
-```
+
