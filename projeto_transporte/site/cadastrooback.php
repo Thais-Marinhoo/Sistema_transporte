@@ -26,14 +26,20 @@ for($i = 0; $i < count($nomes); $i++){
 
     // IGNORA LINHAS VAZIAS
     if(
-        $nome == "" ||
-        $serie == "" ||
-        $curso == "" ||
-        $endereco == ""
-    ){
-        continue;
-    }
 
+    empty($nome) ||
+
+    empty($serie) ||
+
+    empty($curso) ||
+
+    empty($endereco)
+
+){
+
+    continue;
+
+}
     // ESCAPA DADOS
     $nomeEsc = mysqli_real_escape_string($conexao, $nome);
 
