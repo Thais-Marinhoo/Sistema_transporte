@@ -80,3 +80,9 @@ window.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+
+// LIMPAR URL APÓS O CARREGAMENTO
+// ==========================================
+if (window.location.search.includes('status=')) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+}

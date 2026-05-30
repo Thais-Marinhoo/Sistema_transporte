@@ -33,8 +33,16 @@ $rotas  = listarRotas($conexao);
     <?php if (isset($_GET['sucesso'])): ?>
         <div class="alert alert-success"><?= htmlspecialchars($_GET['sucesso']) ?></div>
     <?php endif; ?>
-    <?php if (isset($_GET['erro'])): ?>
-        <div class="alert alert-danger"><?= htmlspecialchars($_GET['erro']) ?></div>
+    
+    <?php if(isset($_GET['status']) && $_GET['status'] == 'endereco'): ?>
+        <div style="display: flex; align-items: center; gap: 12px; background-color: #fff5f5; border-left: 4px solid #e53e3e; border-radius: 6px; padding: 16px; margin: 15px 0; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); font-family: system-ui, -apple-system, sans-serif;">
+        <!-- Ícone do Material Icons que você já tem importado no seu <head> -->
+        <span class="material-icons" style="color: #e53e3e; font-size: 24px;">error_outline</span>
+        
+        <p style="margin: 0; color: #c53030; font-size: 0.95rem; line-height: 1.5; font-weight: 500;">
+            Não foi possível encontrar as coordenadas para o endereço digitado. Verifique a Ortografia ou se escreveu o nome da forma indicada.
+        </p>
+    </div>
     <?php endif; ?>
 
     <div class="cadastro-container">
@@ -173,39 +181,7 @@ $rotas  = listarRotas($conexao);
 
 </div>
 
-<script>
-// Busca em Pontos
-document.getElementById('buscaPonto').addEventListener('keyup', function() {
-    let filtro = this.value.toLowerCase();
-    let linhas = document.querySelectorAll('#tabelaPontos tr');
-    for(let i = 1; i < linhas.length; i++) {
-        let texto = linhas[i].textContent.toLowerCase();
-        linhas[i].style.display = texto.includes(filtro) ? '' : 'none';
-    }
-});
-
-// Busca em Rotas
-document.getElementById('buscaRota').addEventListener('keyup', function() {
-    let filtro = this.value.toLowerCase();
-    let linhas = document.querySelectorAll('#tabelaRotas tr');
-    for(let i = 1; i < linhas.length; i++) {
-        let texto = linhas[i].textContent.toLowerCase();
-        linhas[i].style.display = texto.includes(filtro) ? '' : 'none';
-    }
-});
-
-// Mostrar/esconder motorista secundário
-const turnoManha = document.getElementById('turnoManha');
-const motoristaSecundario = document.getElementById('motoristaSecundario');
-
-turnoManha.addEventListener('change', function(){
-    if(this.value === 'sim'){
-        motoristaSecundario.style.display = 'block';
-    } else {
-        motoristaSecundario.style.display = 'none';
-    }
-});
-</script>
+<script src="rotas.js"></script>
 
 </body>
 </html>

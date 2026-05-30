@@ -42,7 +42,7 @@ curl_close($ch);
 
 $resultado_dados = json_decode($resposta_texto, true);
 
-// 6. Verifica se a API encontrou o local com sucesso
+// Verifica se a API encontrou o local com sucesso
 if (!empty($resultado_dados) && isset($resultado_dados[0]['lat'])) {
     
     // Sucesso! Aqui estão as duas variáveis numéricas prontinhas que você precisava
@@ -54,7 +54,7 @@ if (!empty($resultado_dados) && isset($resultado_dados[0]['lat'])) {
 
 } else {
     // Caso o endereço digitado seja inválido ou inexistente em Crateús
-    echo "Erro: Não conseguimos localizar as coordenadas para o endereço digitado. Verifique a ortografia.";
+    header("Location: telarotas.php?status=endereco");
     exit; // Interrompe para não salvar dados vazios no banco
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

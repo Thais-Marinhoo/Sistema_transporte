@@ -16,7 +16,7 @@ $result_user = mysqli_query($conexao, $query_user);
 
 if (mysqli_num_rows($result_user) == 1) {
     $_SESSION['email'] = $email;
-    $_SESSION['perfil'] = 'usuario';   // ou 'admin' se quiser dar permissão especial pra algum usuário
+    $_SESSION['perfil'] = 'usuario';
     header('Location: site/main.php');
     exit();
 } 
