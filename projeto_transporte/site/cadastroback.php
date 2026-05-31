@@ -59,18 +59,19 @@ for($i = 0; $i < count($nomes); $i++){
 
 
 
-    // IGNORA LINHAS VAZIAS
+    // SE HOUVER CAMPOS VAZIOS, BLOQUEIA E REDIRECIONA
     if(
         $nome == "" ||
         $serie == "" ||
         $curso == "" ||
         $enderecos == ""
     ){
-        continue;
+        // Envia de volta para a tela de cadastro avisando que faltam dados
+        header("Location: tela.cadastro.php?status=falta_info");
+        exit(); // Interrompe completamente o script aqui
     }
 
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////    
+///////////////////////////////////////////////////////////////////////////////////////////////////////    
 // ... (Seu código existente recebe as variáveis do formulário, ex: $endereco = $_POST['endereco'];)
 
 // 1. Prepara o endereço garantindo que a busca foque em Crateús
@@ -190,7 +191,7 @@ if (!empty($resultado_dados) && isset($resultado_dados[0]['lat'])) {
 }
 
 // REDIRECIONA
-header("Location: lista.alunos.php");
+header("Location: lista.alunos.php?status=sucesso_aluno");
 exit();
 
 ?>

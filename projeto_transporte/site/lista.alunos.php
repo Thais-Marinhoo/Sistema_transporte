@@ -1,12 +1,8 @@
 <?php
-session_start();
-
-if(!isset($_SESSION['email'])){
-    header("Location: ../index.php");
-    exit();
-}
-
 include '../conexao.php';
+include 'rotas_back.php'; //Só para garantir que a função de atualização seja chamada toda vez que essa página for acessada, mantendo os dados sempre atualizados
+
+atualizarAlunos($conexao); // Atualiza os dados dos alunos com base nos pontos mais próximos antes de exibir a lista
 ?>
 
 <!DOCTYPE html>
@@ -35,18 +31,21 @@ include '../conexao.php';
 <?php include "menu.php"; ?>
 
 <div class="lista-alunos-page">
-
+    
     <div class="lista-alunos-container">
-
+        
         <!-- TÍTULO -->
         <h1 class="lista-alunos-titulo">
             Lista de Alunos
         </h1>
-
+        
         <p class="lista-alunos-subtitulo">
             Visualize todos os alunos cadastrados no sistema.
         </p>
-
+        
+        <!-- Mensagens do Sistema -->
+        <?php include 'alertas.php'; ?>
+        
         <!-- FILTROS -->
         <div class="lista-topo-filtros">
 

@@ -28,27 +28,8 @@ if(!isset($_SESSION['email'])){
 
 <?php include 'menu.php'; ?>
 
-<?php if(isset($_GET['status']) && $_GET['status'] == 'endereco'): ?>
-        <div style="display: flex; align-items: center; gap: 12px; background-color: #fff5f5; border-left: 4px solid #e53e3e; border-radius: 6px; padding: 16px; margin: 15px 0; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); font-family: system-ui, -apple-system, sans-serif;">
-        <!-- Ícone do Material Icons que você já tem importado no seu <head> -->
-        <span class="material-icons" style="color: #e53e3e; font-size: 24px;">error_outline</span>
-        
-        <p style="margin: 0; color: #c53030; font-size: 0.95rem; line-height: 1.5; font-weight: 500;">
-            Não foi possível encontrar as coordenadas para o endereço digitado. Verifique a Ortografia ou se escreveu o nome da forma indicada.
-        </p>
-    </div>
-<?php endif; ?>
-
-<?php if(isset($_GET['status']) && $_GET['status'] == 'sem_pontos'): ?>
-        <div style="display: flex; align-items: center; gap: 12px; background-color: #fff5f5; border-left: 4px solid #e53e3e; border-radius: 6px; padding: 16px; margin: 15px 0; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); font-family: system-ui, -apple-system, sans-serif;">
-        <!-- Ícone do Material Icons que você já tem importado no seu <head> -->
-        <span class="material-icons" style="color: #e53e3e; font-size: 24px;">error_outline</span>
-        
-        <p style="margin: 0; color: #c53030; font-size: 0.95rem; line-height: 1.5; font-weight: 500;">
-            Não foi possível encontrar pontos de coleta cadastrados. Por favor, cadastre pontos de coleta <strong>antes de cadastrar alunos</strong>.
-        </p>
-    </div>
-<?php endif; ?>
+<!-- Mensagens do Sistema -->
+    <?php include 'alertas.php'; ?>
 
 <div class="conteudo">
 
@@ -57,7 +38,7 @@ if(!isset($_SESSION['email'])){
     </h1>
 
     <!-- FORM -->
-    <form action="cadastrooback.php" method="POST">
+    <form action="cadastroback.php" method="POST" id="formCA">
 
         <table class="tabela-alunos" id="tabelaAlunos">
 
@@ -199,7 +180,7 @@ if(!isset($_SESSION['email'])){
 
 </div>
 
-<script src="cadastro.js?v=999"></script>
+<script src="cadastro.js"></script>
 
 </body>
 </html>

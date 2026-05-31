@@ -29,21 +29,9 @@ $rotas  = listarRotas($conexao);
     <h1 class="titulo">Cadastro de Rotas</h1>
     <p class="sub">Gerencie pontos, ônibus e rotas do sistema.</p>
 
-    <!-- Mensagens -->
-    <?php if (isset($_GET['sucesso'])): ?>
-        <div class="alert alert-success"><?= htmlspecialchars($_GET['sucesso']) ?></div>
-    <?php endif; ?>
+    <!-- Mensagens do Sistema -->
+    <?php include 'alertas.php'; ?>
     
-    <?php if(isset($_GET['status']) && $_GET['status'] == 'endereco'): ?>
-        <div style="display: flex; align-items: center; gap: 12px; background-color: #fff5f5; border-left: 4px solid #e53e3e; border-radius: 6px; padding: 16px; margin: 15px 0; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); font-family: system-ui, -apple-system, sans-serif;">
-        <!-- Ícone do Material Icons que você já tem importado no seu <head> -->
-        <span class="material-icons" style="color: #e53e3e; font-size: 24px;">error_outline</span>
-        
-        <p style="margin: 0; color: #c53030; font-size: 0.95rem; line-height: 1.5; font-weight: 500;">
-            Não foi possível encontrar as coordenadas para o endereço digitado. Verifique a Ortografia ou se escreveu o nome da forma indicada.
-        </p>
-    </div>
-    <?php endif; ?>
 
     <div class="cadastro-container">
 
@@ -52,13 +40,13 @@ $rotas  = listarRotas($conexao);
             <h5 class="card-title">Cadastro de Ponto</h5>
             <form method="POST" action="">
                 <label>Número do ponto</label>
-                <input type="number" name="numero_ponto" placeholder="Digite o número" required>
+                <input type="number" name="numero_ponto" placeholder="Digite o número">
 
                 <label>Nome do ponto</label>
-                <input type="text" name="nome_ponto" placeholder="Digite o nome do ponto" required>
+                <input type="text" name="nome_ponto" placeholder="Digite o nome do ponto">
 
                 <label>Endereço</label>
-                <input type="text" name="endereco" placeholder="Digite o endereço" required>
+                <input type="text" name="endereco" placeholder="Digite o endereço">
 
                 <button class="btn-salvar" type="submit" name="salvar_ponto">Salvar Ponto</button>
             </form>
@@ -70,10 +58,10 @@ $rotas  = listarRotas($conexao);
             <form method="POST" action="">
 
                 <label>Nome do motorista</label>
-                <input type="text" name="motorista_m" placeholder="Digite o nome" required>
+                <input type="text" name="motorista_m" placeholder="Digite o nome">
 
                 <label>Nome da rota</label>
-                <input type="text" name="nome_rota" placeholder="Digite o nome da rota" required>
+                <input type="text" name="nome_rota" placeholder="Digite o nome da rota">
 
                 <label>Pontos por onde passa <small>(Segure CTRL para vários)</small></label>
                 <select name="pontos[]" class="rota-select" multiple size="6">
