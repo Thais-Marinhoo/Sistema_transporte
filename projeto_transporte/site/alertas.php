@@ -9,7 +9,6 @@ $mensagens_erro = [
     'sem_pontos' => 'Não é possível deletar o último ponto do sistema. Cadastre outro ponto antes.',
     'erro_pdeletar' => 'Não é possível deletar o último ponto do sistema. Cadastre outro ponto antes.',
     'erro_p'     => 'Não é possível cadastrar o ponto. Verifique os dados e tente novamente.',
-    'falta_info'     => 'Não é possível cadastrar o(s) aluno(s). Verifique se preencheu todos os campos obrigatórios.',
     'erro_rdeletada' => 'Não foi possível deletar a rota.'
 ];
 

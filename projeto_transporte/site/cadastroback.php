@@ -7,6 +7,7 @@ if(!isset($_SESSION['email'])){
 }
 
 include '../conexao.php';
+
 function Haversine($lat1, $lon1, $lat2, $lon2) {
     $raioTerra = 6371; // Raio da Terra em Quilômetros
 
@@ -21,7 +22,7 @@ function Haversine($lat1, $lon1, $lat2, $lon2) {
          
     $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
     
-    $distancia = $raioTerra * $c; // Retorna o valor em quilômetros (ex: 0.350 = 350 metros)
+    $distancia = $raioTerra * $c; // Retorna o valor em quilômetros
     return $distancia; 
 }
 
@@ -30,25 +31,21 @@ $resPontos = mysqli_query($conexao, $sqlVerificaPontos);
 $dadosPontos = mysqli_fetch_assoc($resPontos);
 
 if (!$dadosPontos || $dadosPontos['total'] == 0) {
-    // Redireciona o usuário de volta pois a vinculação é obrigatória
     header("Location: tela.cadastro.php?status=sem_pontos");
-    exit(); // Interrompe a execução completa do script aqui
+    exit();
 }
-
 
 if(!isset($_POST['nome'])){
     die("Nenhum dado recebido!");
 }
-
-
 
 $nomes = $_POST['nome'];
 $series = $_POST['serie'];
 $cursos = $_POST['curso'];
 $endereco = $_POST['endereco'];
 
-
-
+// Inicializa o contador para saber se alguém foi salvo de verdade
+$alunosSalvos = 0;
 
 for($i = 0; $i < count($nomes); $i++){
 
@@ -57,77 +54,47 @@ for($i = 0; $i < count($nomes); $i++){
     $curso = trim($cursos[$i]);
     $enderecos = trim($endereco[$i]);
 
-
-
-    // SE HOUVER CAMPOS VAZIOS, BLOQUEIA E REDIRECIONA
-    if(
-        $nome == "" ||
-        $serie == "" ||
-        $curso == "" ||
-        $enderecos == ""
-    ){
-        // Envia de volta para a tela de cadastro avisando que faltam dados
-        header("Location: tela.cadastro.php?status=falta_info");
-        exit(); // Interrompe completamente o script aqui
+    // PROTEÇÃO EXTRA: Se por acaso chegar uma linha fantasma vazia, ignora e pula ela
+    if (empty($nome) && empty($enderecos)) {
+        continue;
     }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////    
-// ... (Seu código existente recebe as variáveis do formulário, ex: $endereco = $_POST['endereco'];)
+    // Prepara o endereço garantindo que a busca foque em Crateús
+    $endereco_filtrado = $enderecos . ", Crateús, Ceará, Brasil";
+    $url_api = "https://nominatim.openstreetmap.org/search?q=" . urlencode($endereco_filtrado) . "&format=json&limit=1";
 
-// 1. Prepara o endereço garantindo que a busca foque em Crateús
-$endereco_filtrado = $enderecos . ", Crateús, Ceará, Brasil";
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url_api);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_USERAGENT, "SistemaTransporteCrateus/1.0 (heitor.almeida2@aluno.ce.gov.br)");
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
 
-// ... seu código de preparar o endereço filtrado ...
+    $resposta_texto = curl_exec($ch);
+    curl_close($ch);
 
-$url_api = "https://nominatim.openstreetmap.org/search?q=" . urlencode($endereco_filtrado) . "&format=json&limit=1";
+    $resultado_dados = json_decode($resposta_texto, true);
 
-// Nova forma de disparar usando cURL (ignora travas do file_get_contents no Windows)
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $url_api);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_USERAGENT, "SistemaTransporteCrateus/1.0 (heitor.almeida2@aluno.ce.gov.br)");
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Ignora erros de certificado SSL locais do XAMPP
+    // Se a API falhar ou não achar o endereço no PHP, pula a linha para não salvar dados nulos
+    if (empty($resultado_dados) || !isset($resultado_dados[0]['lat'])) {
+        continue; 
+    }
 
-$resposta_texto = curl_exec($ch);
-curl_close($ch);
-
-$resultado_dados = json_decode($resposta_texto, true);
-
-// Verifica se a API encontrou o local com sucesso
-if (!empty($resultado_dados) && isset($resultado_dados[0]['lat'])) {
-    
-    // Sucesso! Aqui estão as duas variáveis numéricas prontinhas que você precisava
     $latitude = (float) $resultado_dados[0]['lat'];
     $longitude = (float) $resultado_dados[0]['lon'];
-    
-    // ... (A partir daqui você coloca o seu código de INSERT no banco de dados)
-    // Exemplo: usar $latitude e $longitude na sua query do banco.
-
-} else {
-    // Caso o endereço digitado seja inválido ou inexistente em Crateús
-    header("Location: tela.cadastro.php?status=endereco");
-    exit; // Interrompe para não salvar dados vazios no banco
-}
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // ESCAPA DADOS
     $nomeEsc = mysqli_real_escape_string($conexao, $nome);
 
     // VERIFICA SE O ALUNO JÁ EXISTE
-    $sqlVerifica = "
-        SELECT id_aluno
-        FROM aluno
-        WHERE nome = '$nomeEsc'
-    ";
-
+    $sqlVerifica = "SELECT id_aluno FROM aluno WHERE nome = '$nomeEsc'";
     $resultado = mysqli_query($conexao, $sqlVerifica);
 
     if($resultado && mysqli_num_rows($resultado) > 0){
         continue;
     }
 
-    $idPontoMaisProximo = "NULL"; // Valor padrão caso não existam pontos cadastrados
-    $menorDistancia = 999999;     // Começa com um valor absurdamente alto
+    $idPontoMaisProximo = "NULL"; 
+    $menorDistancia = 999999;     
 
     // Busca todos os pontos salvos na tabela "ponto"
     $sqlPontos = "SELECT id_ponto, latitude, longitude FROM ponto";
@@ -135,63 +102,44 @@ if (!empty($resultado_dados) && isset($resultado_dados[0]['lat'])) {
 
     if ($resultadoPontos && mysqli_num_rows($resultadoPontos) > 0) {
         while ($ponto = mysqli_fetch_assoc($resultadoPontos)) {
-            
-            // Calcula a distância do aluno atual para este ponto específico do loop
             $distancia = Haversine($latitude, $longitude, $ponto['latitude'], $ponto['longitude']);
-
-            // Se a distância calculada for menor que a menor registrada até agora, atualiza
             if ($distancia < $menorDistancia) {
                 $menorDistancia = $distancia;
-                $idPontoMaisProximo = $ponto['id_ponto']; // Armazena o ID do ponto vencedor
+                $idPontoMaisProximo = $ponto['id_ponto']; 
             }
         }
     }
 
     // INSERT
     $sql = "
-        INSERT INTO aluno
-        (
-            nome,
-            endereco,
-            serie,
-            curso,
-            latitude,
-            longitude,
-            id_ponto
-        )
-
-        VALUES
-        (
+        INSERT INTO aluno (nome, endereco, serie, curso, latitude, longitude, id_ponto)
+        VALUES (
             '".mysqli_real_escape_string($conexao, $nome)."',
-
             '".mysqli_real_escape_string($conexao, $enderecos)."',
-
             '".mysqli_real_escape_string($conexao, $serie)."',
-
             '".mysqli_real_escape_string($conexao, $curso)."',
-
-            '".mysqli_real_escape_string($conexao, $latitude)."',
-
-            '".mysqli_real_escape_string($conexao, $longitude)."',
-            
-            '".mysqli_real_escape_string($conexao, $idPontoMaisProximo)."'
-
+            '".$latitude."',
+            '".$longitude."',
+            ".$idPontoMaisProximo."
         )
     ";
 
     $resultadoInsert = mysqli_query($conexao, $sql);
 
-    // MOSTRA ERRO SE DER PROBLEMA
     if(!$resultadoInsert){
-
         die("Erro no banco: " . mysqli_error($conexao));
-
+    } else {
+        $alunosSalvos++; 
     }
-
 }
 
-// REDIRECIONA
-header("Location: lista.alunos.php?status=sucesso_aluno");
-exit();
-
+// REDIRECIONA APENAS SE HOUVER ALUNOS SALVOS
+if ($alunosSalvos > 0) {
+    header("Location: lista.alunos.php?status=sucesso_aluno");
+    exit();
+} else {
+    // Se o JS falhou e nenhum aluno pôde ser salvo, interrompemos 
+    // com uma mensagem simples para não redirecionar e NÃO apagar a tela!
+    die("Nenhum aluno válido pôde ser cadastrado. Por favor, volte e verifique os dados.");
+}
 ?>

@@ -72,6 +72,7 @@ if(!isset($_SESSION['email'])){
                         <input 
                      type="text"
                      name="nome[]"
+                     disabled
                         >
 
                     </td>
@@ -108,7 +109,7 @@ if(!isset($_SESSION['email'])){
 
                         <input 
                      type="text"
-                     name="endereco[]"
+                     name="endereco[]" disabled
                         >
 
                     </td>
