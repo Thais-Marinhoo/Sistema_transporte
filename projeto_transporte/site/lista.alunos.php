@@ -15,18 +15,33 @@ include '../conexao.php';
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Lista de Alunos - Rota Certa</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Lista de Alunos - Rota Certa
+    </title>
 
     <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
 
     <!-- Ícones -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        rel="stylesheet"
+    >
 
     <!-- CSS -->
-    <link rel="stylesheet" href="mstyle.css?v=1">
+    <link
+        rel="stylesheet"
+        href="mstyle.css?v=999"
+    >
 
 </head>
 
@@ -72,15 +87,15 @@ include '../conexao.php';
                     Série - Todas
                 </option>
 
-                <option value="1º">
+                <option value="1">
                     1º
                 </option>
 
-                <option value="2º">
+                <option value="2">
                     2º
                 </option>
 
-                <option value="3º">
+                <option value="3">
                     3º
                 </option>
 
@@ -93,43 +108,68 @@ include '../conexao.php';
                     Curso - Todos
                 </option>
 
-                <option value="Informática">
+                <option value="informatica">
                     Informática
                 </option>
 
-                <option value="Desenvolvimento de Sistemas">
+                <option value="ds">
                     Desenvolvimento de Sistemas
                 </option>
 
             </select>
 
             <!-- PDF -->
-            <button class="lista-btn-pdf">
+            <a
+                href="gerar_pdf.php"
+                target="_blank"
+                class="link-pdf"
+            >
 
-                <span class="material-icons">
-                    picture_as_pdf
-                </span>
+                <button class="lista-btn-pdf">
 
-                Gerar PDF
+                    <span class="material-icons">
+                        picture_as_pdf
+                    </span>
 
-            </button>
+                    Gerar PDF
+
+                </button>
+
+            </a>
 
         </div>
 
         <!-- TABELA -->
         <div class="table-responsive">
 
-            <table class="lista-tabela" id="tabelaLista">
+            <table
+                class="lista-tabela"
+                id="tabelaLista"
+            >
 
                 <thead>
 
                     <tr>
 
-                        <th>Nome do Aluno</th>
-                        <th>Série</th>
-                        <th>Curso</th>
-                        <th>Onde Mora</th>
-                        <th>Ações</th>
+                        <th>
+                            Nome do Aluno
+                        </th>
+
+                        <th>
+                            Série
+                        </th>
+
+                        <th>
+                            Curso
+                        </th>
+
+                        <th>
+                            Onde Mora
+                        </th>
+
+                        <th>
+                            Ações
+                        </th>
 
                     </tr>
 
@@ -139,11 +179,19 @@ include '../conexao.php';
 
                 <?php
 
-                $sql = "SELECT * FROM aluno ORDER BY id_aluno DESC";
+                $sql = "
+                    SELECT *
+                    FROM aluno
+                    ORDER BY id_aluno DESC
+                ";
 
-                $resultado = mysqli_query($conexao, $sql);
+                $resultado =
+                mysqli_query($conexao, $sql);
 
-                while($aluno = mysqli_fetch_assoc($resultado)){
+                while(
+                    $aluno =
+                    mysqli_fetch_assoc($resultado)
+                ){
 
                 ?>
 
@@ -170,7 +218,24 @@ include '../conexao.php';
                             <div class="lista-acoes">
 
                                 <!-- VISUALIZAR -->
-                                <button class="lista-btn-acao lista-btn-azul">
+                                <button
+
+                                    class="
+                                        lista-btn-acao
+                                        lista-btn-azul
+                                        btnVisualizar
+                                    "
+
+                                    data-id="<?php echo $aluno['id_aluno']; ?>"
+
+                                    data-nome="<?php echo $aluno['nome']; ?>"
+
+                                    data-serie="<?php echo $aluno['serie']; ?>"
+
+                                    data-curso="<?php echo $aluno['curso']; ?>"
+
+                                    data-endereco="<?php echo $aluno['endereco']; ?>"
+                                >
 
                                     <span class="material-icons">
                                         visibility
@@ -179,13 +244,56 @@ include '../conexao.php';
                                 </button>
 
                                 <!-- EDITAR -->
-                                <button class="lista-btn-acao lista-btn-amarelo">
+                                <button
+
+                                    class="
+                                        lista-btn-acao
+                                        lista-btn-amarelo
+                                        btnEditar
+                                    "
+
+                                    data-id="<?php echo $aluno['id_aluno']; ?>"
+
+                                    data-nome="<?php echo $aluno['nome']; ?>"
+
+                                    data-serie="<?php echo $aluno['serie']; ?>"
+
+                                    data-curso="<?php echo $aluno['curso']; ?>"
+
+                                    data-endereco="<?php echo $aluno['endereco']; ?>"
+                                >
 
                                     <span class="material-icons">
                                         edit
                                     </span>
 
                                 </button>
+
+                                <!-- EXCLUIR -->
+                                <a
+
+                                    href="
+                                        excluir_aluno.php?id=
+                                        <?php echo $aluno['id_aluno']; ?>
+                                    "
+
+                                    class="
+                                        lista-btn-acao
+                                        btn-vermelho
+                                    "
+
+                                    onclick="
+                                        return confirm(
+                                            'Deseja excluir este aluno?'
+                                        )
+                                    "
+                                >
+
+                                    <span class="material-icons">
+                                        delete
+                                    </span>
+
+                                </a>
 
                             </div>
 
@@ -210,7 +318,7 @@ include '../conexao.php';
 
             <div class="lista-paginacao">
 
-                <button>
+                <button class="ativo">
                     1
                 </button>
 
@@ -222,7 +330,122 @@ include '../conexao.php';
 
 </div>
 
-<script src="lista.js"></script>
+<!-- MODAL VISUALIZAR -->
+
+<div
+    class="modal-custom"
+    id="modalVisualizar"
+>
+
+    <div class="modal-box">
+
+        <span
+            class="fecharModal"
+            id="fecharVisualizar"
+        >
+            ×
+        </span>
+
+        <h2>
+            Visualizar Aluno
+        </h2>
+
+        <input
+            type="text"
+            id="viewNome"
+            readonly
+        >
+
+        <input
+            type="text"
+            id="viewSerie"
+            readonly
+        >
+
+        <input
+            type="text"
+            id="viewCurso"
+            readonly
+        >
+
+        <input
+            type="text"
+            id="viewEndereco"
+            readonly
+        >
+
+    </div>
+
+</div>
+
+<!-- MODAL EDITAR -->
+
+<div
+    class="modal-custom"
+    id="modalEditar"
+>
+
+    <div class="modal-box">
+
+        <span
+            class="fecharModal"
+            id="fecharEditar"
+        >
+            ×
+        </span>
+
+        <h2>
+            Editar Aluno
+        </h2>
+
+        <form
+            action="editar_aluno_back.php"
+            method="POST"
+        >
+
+            <input
+                type="hidden"
+                name="id"
+                id="editId"
+            >
+
+            <input
+                type="text"
+                name="nome"
+                id="editNome"
+            >
+
+            <input
+                type="text"
+                name="serie"
+                id="editSerie"
+            >
+
+            <input
+                type="text"
+                name="curso"
+                id="editCurso"
+            >
+
+            <input
+                type="text"
+                name="endereco"
+                id="editEndereco"
+            >
+
+            <button class="btn-painel">
+
+                Salvar Alterações
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script src="lista.js?v=999"></script>
 
 </body>
 </html>

@@ -1,3 +1,4 @@
+
 // ESPERA A PÁGINA CARREGAR
 window.onload = function(){
 
@@ -10,6 +11,9 @@ window.onload = function(){
 
     const btnAdd =
     document.getElementById("btnAdd");
+
+    const form =
+    document.querySelector("form");
 
     // CRIAR LINHA
     function criarLinha(){
@@ -56,7 +60,7 @@ window.onload = function(){
 
     });
 
-    // REMOVER
+    // REMOVER LINHA
     document.addEventListener("click", function(e){
 
         let botao =
@@ -64,19 +68,61 @@ window.onload = function(){
 
         if(botao){
 
+            let linhas =
+            corpoTabela.querySelectorAll("tr:not(.linha-modelo)");
+
+            // NÃO DEIXA APAGAR TODAS
+            if(linhas.length <= 1){
+
+                alert("Precisa existir pelo menos uma linha.");
+
+                return;
+
+            }
+
             botao.closest("tr").remove();
 
         }
 
     });
 
-};
-window.addEventListener("DOMContentLoaded", function () {
+    // VALIDAR FORMULÁRIO
+    form.addEventListener("submit", function(e){
 
-    const form = document.querySelector("form");
+        let linhas =
+        corpoTabela.querySelectorAll("tr:not(.linha-modelo)");
 
-    form.addEventListener("submit", function () {
-        alert("FORMULÁRIO ENVIADO");
+        let possuiAluno = false;
+
+        linhas.forEach(function(linha){
+
+            let nome =
+            linha.querySelector('input[name="nome[]"]')
+            .value
+            .trim();
+
+            let endereco =
+            linha.querySelector('input[name="endereco[]"]')
+            .value
+            .trim();
+
+            if(nome !== "" && endereco !== ""){
+
+                possuiAluno = true;
+
+            }
+
+        });
+
+        // BLOQUEIA ENVIO
+        if(!possuiAluno){
+
+            e.preventDefault();
+
+            alert("Cadastre pelo menos um aluno antes de salvar.");
+
+        }
+
     });
 
-});
+};

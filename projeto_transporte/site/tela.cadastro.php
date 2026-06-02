@@ -177,7 +177,7 @@ if(!isset($_SESSION['email'])){
 
 </div>
 
-<script src="cadastro.js?v=999"></script>
+<script src="cadastro.js?v=193856"></script>
 
 </body>
 </html>
