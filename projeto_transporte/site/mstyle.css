@@ -750,3 +750,18 @@ body{
     background: #ffcccc;
     color: #c82333;
 }
+/* =====================================
+   CORREÇÃO ALINHAMENTO DAS AÇÕES
+===================================== */
+
+/* Centraliza o texto "Ações" no cabeçalho e define um tamanho fixo */
+.tabela-rotas th:last-child {
+    text-align: center;
+    width: 120px;
+}
+
+/* Garante que os botões fiquem perfeitamente centralizados logo abaixo */
+.tabela-rotas td:last-child .lista-acoes {
+    justify-content: center;
+    width: 100%;
+}
