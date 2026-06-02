@@ -119,25 +119,21 @@ include '../conexao.php';
 
             </select>
 
-            <!-- PDF -->
             <a
-                href="gerar_pdf.php"
-                target="_blank"
-                class="link-pdf"
-            >
+    href="subir_ano.php"
+    class="link-pdf"
+    onclick="return confirm('Deseja avançar todos os alunos de série? Os alunos do 3º ano serão removidos.')"
+>
+    <button class="lista-btn-pdf">
 
-                <button class="lista-btn-pdf">
+        <span class="material-icons">
+            school
+        </span>
 
-                    <span class="material-icons">
-                        picture_as_pdf
-                    </span>
+        Subir de Ano
 
-                    Gerar PDF
-
-                </button>
-
-            </a>
-
+    </button>
+</a>
         </div>
 
         <!-- TABELA -->
