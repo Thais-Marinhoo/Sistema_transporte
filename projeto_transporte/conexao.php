@@ -1,15 +1,8 @@
 <?php
+define('HOST', 'localhost'); // O VALOR DE HOST É O IP DO BANCO DE DADOS MYSQL
+define('USUARIO', 'root');
+define('SENHA', '');
+define('DB', 'login_transporte');
 
-$conexao = mysqli_connect(
-    "127.0.0.1",
-    "root",
-    "",
-    "login_transporte",
-    3307
-);
-
-if ($conexao) {
-   
-} else {
-    echo mysqli_connect_error();
-}
+$conexao = mysqli_connect(HOST, USUARIO, SENHA, DB) or die('Não foi possível conectar');
+?>

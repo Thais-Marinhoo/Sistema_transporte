@@ -1,44 +1,36 @@
-
 // ESPERA A PÁGINA CARREGAR
 window.onload = function(){
 
     // PEGA ELEMENTOS
-    const linhaModelo =
-    document.querySelector(".linha-modelo");
-
-    const corpoTabela =
-    document.getElementById("corpoTabela");
-
-    const btnAdd =
-    document.getElementById("btnAdd");
-
-    const form =
-    document.querySelector("form");
+    const linhaModelo = document.querySelector(".linha-modelo");
+    const corpoTabela = document.getElementById("corpoTabela");
+    const btnAdd = document.getElementById("btnAdd");
 
     // CRIAR LINHA
     function criarLinha(){
+        let novaLinha = linhaModelo.cloneNode(true);
 
-        let novaLinha =
-        linhaModelo.cloneNode(true);
-
-        // REMOVE CLASSE MODELO
+        // REMOVE CLASSE MODELO E HABILITA CAMPOS
         novaLinha.classList.remove("linha-modelo");
-
-        // MOSTRA LINHA
         novaLinha.style.display = "table-row";
 
-        // LIMPA INPUTS
-        novaLinha
-        .querySelectorAll("input")
-        .forEach(input => {
-
-            input.value = "";
-
+        novaLinha.querySelectorAll("input, select").forEach(campo => {
+            campo.removeAttribute("disabled");
+            
+            if(campo.tagName === 'INPUT') {
+                campo.value = "";
+                
+                // Remove o destaque vermelho instantaneamente assim que começa a digitar
+                campo.addEventListener('input', function() {
+                    if (this.value.trim() !== '') {
+                        this.style.border = '';
+                        this.style.backgroundColor = '';
+                    }
+                });
+            }
         });
 
-        // ADICIONA
         corpoTabela.appendChild(novaLinha);
-
     }
 
     // PRIMEIRA LINHA
@@ -46,83 +38,118 @@ window.onload = function(){
 
     // BOTÃO ADICIONAR
     btnAdd.addEventListener("click", function(){
-
-        let quantidade =
-        parseInt(
-            document.getElementById("quantidadeLinhas").value
-        ) || 1;
-
+        let quantidade = parseInt(document.getElementById("quantidadeLinhas").value) || 1;
         for(let i = 0; i < quantidade; i++){
-
             criarLinha();
-
         }
-
     });
 
-    // REMOVER LINHA
+    // REMOVER
     document.addEventListener("click", function(e){
-
-        let botao =
-        e.target.closest(".btn-remover");
-
+        let botao = e.target.closest(".btn-remover");
         if(botao){
-
-            let linhas =
-            corpoTabela.querySelectorAll("tr:not(.linha-modelo)");
-
-            // NÃO DEIXA APAGAR TODAS
-            if(linhas.length <= 1){
-
-                alert("Precisa existir pelo menos uma linha.");
-
-                return;
-
-            }
-
             botao.closest("tr").remove();
-
         }
-
     });
 
-    // VALIDAR FORMULÁRIO
-    form.addEventListener("submit", function(e){
+    // =========================================================================
+    // VALIDAÇÃO AVANÇADA DO FORMULÁRIO (CAMPOS + API GEOLOCALIZAÇÃO)
+    // =========================================================================
+    const form = document.getElementById('formCA');
 
-        let linhas =
-        corpoTabela.querySelectorAll("tr:not(.linha-modelo)");
+    if (form) {
+        // Usamos async/await para conseguir esperar a resposta da API antes de enviar
+        form.addEventListener('submit', async function(event) {
+            
+            // 1. Sempre paramos o envio no início para rodar os testes assíncronos
+            event.preventDefault(); 
+            
+            // Remove caixinhas de erros antigas do topo da tela
+            const erroAntigo = document.getElementById('erro-dinamico-js');
+            if (erroAntigo) erroAntigo.remove();
 
-        let possuiAluno = false;
+            let temErroCampo = false;
+            let temErroEndereco = false;
+            
+            // Pega apenas as linhas que a coordenadora adicionou
+            let linhasVisiveis = form.querySelectorAll('tr:not(.linha-modelo)');
+            
+            // Usamos um laço tradicional for...of para permitir o uso de await dentro dele
+            for (let linha of linhasVisiveis) {
+                let inputNome = linha.querySelector('input[name="nome[]"]');
+                let inputEndereco = linha.querySelector('input[name="endereco[]"]');
 
-        linhas.forEach(function(linha){
+                // Validação de Campos Vazios
+                [inputNome, inputEndereco].forEach(input => {
+                    if (input && input.value.trim() === '') {
+                        temErroCampo = true;
+                        input.style.border = '2px solid #e53e3e'; 
+                        input.style.backgroundColor = '#fff5f5'; 
+                    }
+                });
 
-            let nome =
-            linha.querySelector('input[name="nome[]"]')
-            .value
-            .trim();
+                // Se o campo de endereço não estiver vazio, vamos testar na API em tempo real
+                if (inputEndereco && inputEndereco.value.trim() !== '') {
+                    let enderecoDigitado = inputEndereco.value.trim();
+                    let enderecoFiltrado = enderecoDigitado + ", Crateús, Ceará, Brasil";
+                    
+                    let urlApi = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(enderecoFiltrado)}&format=json&limit=1`;
 
-            let endereco =
-            linha.querySelector('input[name="endereco[]"]')
-            .value
-            .trim();
+                    try {
+                        // Faz a busca na API de forma silenciosa, sem recarregar nada
+                        let resposta = await fetch(urlApi, {
+                            headers: { 'User-Agent': 'SistemaTransporteCrateus/1.0 (heitor.almeida2@aluno.ce.gov.br)' }
+                        });
+                        let dados = await resposta.json();
 
-            if(nome !== "" && endereco !== ""){
+                        // CORREÇÃO AQUI: Como a API retorna uma lista, checamos se ela está vazia 
+                        // ou se o primeiro item da lista [0] não possui a latitude.
+                        if (dados.length === 0 || !dados[0] || !dados[0].lat) {
+                            temErroEndereco = true;
+                            inputEndereco.style.border = '2px solid #e53e3e';
+                            inputEndereco.style.backgroundColor = '#fff5f5';
+                        }
+                    } catch (error) {
+                        console.error("Erro ao conectar na API:", error);
+                    }
 
-                possuiAluno = true;
-
+                }
             }
 
+            // 2. EXIBIÇÃO DE MENSAGENS BASEADO NOS ERROS ENCONTRADOS
+            if (temErroCampo || temErroEndereco) {
+                let mensagemTexto = 'Por favor, preencha todos os campos do aluno. Não deixe linhas em branco.';
+                
+                if (temErroEndereco && !temErroCampo) {
+                    mensagemTexto = 'Um ou mais endereços digitados não foram localizados em Crateús. Verifique a ortografia.';
+                } else if (temErroCampo && temErroEndereco) {
+                    mensagemTexto = 'Verifique os campos: há informações em branco e endereços inválidos destacados.';
+                }
+
+                // Cria a caixinha visual idêntica ao seu alertas.php
+                const caixaErro = document.createElement('div');
+                caixaErro.id = 'erro-dinamico-js';
+                caixaErro.style.cssText = "display: flex; align-items: center; gap: 12px; background-color: #fff5f5; border-left: 4px solid #e53e3e; border-radius: 6px; padding: 16px; margin: 15px 0; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); font-family: system-ui, -apple-system, sans-serif;";
+                
+                caixaErro.innerHTML = `
+                    <span class="material-icons" style="color: #e53e3e; font-size: 24px;">error_outline</span>
+                    <p style="margin: 0; color: #c53030; font-size: 0.95rem; line-height: 1.5; font-weight: 500;">
+                        ${mensagemTexto}
+                    </p>
+                `;
+
+                form.parentNode.insertBefore(caixaErro, form);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+            } else {
+                // Se passou em todos os testes de campos e de endereços, envia de fato para o PHP!
+                form.submit();
+            }
         });
-
-        // BLOQUEIA ENVIO
-        if(!possuiAluno){
-
-            e.preventDefault();
-
-            alert("Cadastre pelo menos um aluno antes de salvar.");
-
-        }
-
-    });
-
+    }
 };
+
+// LIMPAR URL APÓS O CARREGAMENTO
+if (window.location.search.includes('status=')) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+}
