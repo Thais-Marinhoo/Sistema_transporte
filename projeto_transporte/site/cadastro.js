@@ -1,155 +1,169 @@
-// ESPERA A PÁGINA CARREGAR
-window.onload = function(){
+window.onload = function () {
 
-    // PEGA ELEMENTOS
     const linhaModelo = document.querySelector(".linha-modelo");
     const corpoTabela = document.getElementById("corpoTabela");
-    const btnAdd = document.getElementById("btnAdd");
+    const btnAdd      = document.getElementById("btnAdd");
 
-    // CRIAR LINHA
-    function criarLinha(){
+    // ==========================================
+    // CRIAR LINHA (clona o modelo e habilita os campos)
+    // ==========================================
+    function criarLinha() {
         let novaLinha = linhaModelo.cloneNode(true);
 
-        // REMOVE CLASSE MODELO E HABILITA CAMPOS
         novaLinha.classList.remove("linha-modelo");
         novaLinha.style.display = "table-row";
 
-        novaLinha.querySelectorAll("input, select").forEach(campo => {
+        // Remove o disabled de todos os campos clonados
+        novaLinha.querySelectorAll("input, select").forEach(function (campo) {
             campo.removeAttribute("disabled");
-            
-            if(campo.tagName === 'INPUT') {
+
+            // Limpa o valor dos inputs de texto
+            if (campo.tagName === 'INPUT') {
                 campo.value = "";
-                
-                // Remove o destaque vermelho instantaneamente assim que começa a digitar
-                campo.addEventListener('input', function() {
-                    if (this.value.trim() !== '') {
-                        this.style.border = '';
-                        this.style.backgroundColor = '';
-                    }
-                });
             }
+
+            // Remove destaque vermelho assim que começa a digitar
+            campo.addEventListener('input', function () {
+                if (this.value.trim() !== '') {
+                    this.style.border = '';
+                    this.style.backgroundColor = '';
+                }
+            });
         });
 
         corpoTabela.appendChild(novaLinha);
     }
 
-    // PRIMEIRA LINHA
+    // Começa com uma linha pronta
     criarLinha();
 
-    // BOTÃO ADICIONAR
-    btnAdd.addEventListener("click", function(){
+    // Botão adicionar mais linhas
+    btnAdd.addEventListener("click", function () {
         let quantidade = parseInt(document.getElementById("quantidadeLinhas").value) || 1;
-        for(let i = 0; i < quantidade; i++){
+        for (let i = 0; i < quantidade; i++) {
             criarLinha();
         }
     });
 
-    // REMOVER
-    document.addEventListener("click", function(e){
+    // Botão remover linha (protege para não remover a última)
+    document.addEventListener("click", function (e) {
         let botao = e.target.closest(".btn-remover");
-        if(botao){
+        if (botao) {
+            let linhasReais = corpoTabela.querySelectorAll('tr:not(.linha-modelo)');
+            if (linhasReais.length <= 1) {
+                alert("É necessário ter pelo menos uma linha.");
+                return;
+            }
             botao.closest("tr").remove();
         }
     });
 
-    // =========================================================================
-    // VALIDAÇÃO AVANÇADA DO FORMULÁRIO (CAMPOS + API GEOLOCALIZAÇÃO)
-    // =========================================================================
+    // ==========================================
+    // VALIDAÇÃO ANTES DE ENVIAR
+    // ==========================================
     const form = document.getElementById('formCA');
 
     if (form) {
-        // Usamos async/await para conseguir esperar a resposta da API antes de enviar
-        form.addEventListener('submit', async function(event) {
-            
-            // 1. Sempre paramos o envio no início para rodar os testes assíncronos
-            event.preventDefault(); 
-            
-            // Remove caixinhas de erros antigas do topo da tela
+        form.addEventListener('submit', async function (event) {
+            // Segura o envio para validar primeiro
+            event.preventDefault();
+
+            // Remove mensagem de erro anterior se existir
             const erroAntigo = document.getElementById('erro-dinamico-js');
             if (erroAntigo) erroAntigo.remove();
 
-            let temErroCampo = false;
+            // Remove todos os destaques vermelhos anteriores
+            form.querySelectorAll('input').forEach(function (input) {
+                input.style.border = '';
+                input.style.backgroundColor = '';
+            });
+
+            let temErroCampo    = false;
             let temErroEndereco = false;
-            
-            // Pega apenas as linhas que a coordenadora adicionou
-            let linhasVisiveis = form.querySelectorAll('tr:not(.linha-modelo)');
-            
-            // Usamos um laço tradicional for...of para permitir o uso de await dentro dele
+
+            // Pega só as linhas reais (não o modelo escondido)
+            let linhasVisiveis = corpoTabela.querySelectorAll('tr:not(.linha-modelo)');
+
             for (let linha of linhasVisiveis) {
-                let inputNome = linha.querySelector('input[name="nome[]"]');
+                let inputNome     = linha.querySelector('input[name="nome[]"]');
                 let inputEndereco = linha.querySelector('input[name="endereco[]"]');
 
-                // Validação de Campos Vazios
-                [inputNome, inputEndereco].forEach(input => {
+                // Destaca campos de texto vazios
+                [inputNome, inputEndereco].forEach(function (input) {
                     if (input && input.value.trim() === '') {
                         temErroCampo = true;
-                        input.style.border = '2px solid #e53e3e'; 
-                        input.style.backgroundColor = '#fff5f5'; 
+                        input.style.border          = '2px solid #e53e3e';
+                        input.style.backgroundColor = '#fff5f5';
                     }
                 });
 
-                // Se o campo de endereço não estiver vazio, vamos testar na API em tempo real
+                // Verifica endereço na API do Nominatim (só se preenchido)
                 if (inputEndereco && inputEndereco.value.trim() !== '') {
-                    let enderecoDigitado = inputEndereco.value.trim();
-                    let enderecoFiltrado = enderecoDigitado + ", Crateús, Ceará, Brasil";
-                    
-                    let urlApi = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(enderecoFiltrado)}&format=json&limit=1`;
+                    let enderecoFiltrado = inputEndereco.value.trim() + ", Crateús, Ceará, Brasil";
+                    let urlApi = "https://nominatim.openstreetmap.org/search?q=" +
+                                 encodeURIComponent(enderecoFiltrado) + "&format=json&limit=1";
 
                     try {
-                        // Faz a busca na API de forma silenciosa, sem recarregar nada
                         let resposta = await fetch(urlApi, {
-                            headers: { 'User-Agent': 'SistemaTransporteCrateus/1.0 (heitor.almeida2@aluno.ce.gov.br)' }
+                            headers: {
+                                'User-Agent': 'SistemaTransporteCrateus/1.0 (heitor.almeida2@aluno.ce.gov.br)'
+                            }
                         });
                         let dados = await resposta.json();
 
-                        // CORREÇÃO AQUI: Como a API retorna uma lista, checamos se ela está vazia 
-                        // ou se o primeiro item da lista [0] não possui a latitude.
+                        // Se a API não encontrou o endereço, destaca de vermelho
                         if (dados.length === 0 || !dados[0] || !dados[0].lat) {
                             temErroEndereco = true;
-                            inputEndereco.style.border = '2px solid #e53e3e';
+                            inputEndereco.style.border          = '2px solid #e53e3e';
                             inputEndereco.style.backgroundColor = '#fff5f5';
                         }
-                    } catch (error) {
-                        console.error("Erro ao conectar na API:", error);
-                    }
 
+                    } catch (erro) {
+                        // Se a API falhar (sem internet, timeout etc.), deixa o PHP decidir
+                        console.error("Erro ao consultar API de endereço:", erro);
+                    }
                 }
             }
 
-            // 2. EXIBIÇÃO DE MENSAGENS BASEADO NOS ERROS ENCONTRADOS
+            // Se encontrou algum erro, mostra a mensagem e NÃO envia
             if (temErroCampo || temErroEndereco) {
-                let mensagemTexto = 'Por favor, preencha todos os campos do aluno. Não deixe linhas em branco.';
-                
+
+                let mensagem = 'Por favor, preencha todos os campos. Não deixe linhas em branco.';
+
                 if (temErroEndereco && !temErroCampo) {
-                    mensagemTexto = 'Um ou mais endereços digitados não foram localizados em Crateús. Verifique a ortografia.';
+                    mensagem = 'Um ou mais endereços não foram localizados em Crateús. Verifique a ortografia.';
                 } else if (temErroCampo && temErroEndereco) {
-                    mensagemTexto = 'Verifique os campos: há informações em branco e endereços inválidos destacados.';
+                    mensagem = 'Verifique os campos destacados: há informações em branco e endereços inválidos.';
                 }
 
-                // Cria a caixinha visual idêntica ao seu alertas.php
+                // Cria a caixa de erro no mesmo estilo do alertas.php
                 const caixaErro = document.createElement('div');
                 caixaErro.id = 'erro-dinamico-js';
-                caixaErro.style.cssText = "display: flex; align-items: center; gap: 12px; background-color: #fff5f5; border-left: 4px solid #e53e3e; border-radius: 6px; padding: 16px; margin: 15px 0; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); font-family: system-ui, -apple-system, sans-serif;";
-                
-                caixaErro.innerHTML = `
-                    <span class="material-icons" style="color: #e53e3e; font-size: 24px;">error_outline</span>
-                    <p style="margin: 0; color: #c53030; font-size: 0.95rem; line-height: 1.5; font-weight: 500;">
-                        ${mensagemTexto}
-                    </p>
-                `;
+                caixaErro.style.cssText =
+                    "display:flex; align-items:center; gap:12px;" +
+                    "background-color:#fff5f5; border-left:4px solid #e53e3e;" +
+                    "border-radius:6px; padding:16px; margin:15px 0;" +
+                    "box-shadow:0 2px 8px rgba(0,0,0,0.05);";
 
+                caixaErro.innerHTML =
+                    '<span class="material-icons" style="color:#e53e3e; font-size:24px;">error_outline</span>' +
+                    '<p style="margin:0; color:#c53030; font-size:0.95rem; line-height:1.5; font-weight:500;">' +
+                    mensagem + '</p>';
+
+                // Insere a mensagem acima do formulário
                 form.parentNode.insertBefore(caixaErro, form);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-                
+
             } else {
-                // Se passou em todos os testes de campos e de endereços, envia de fato para o PHP!
+                // Tudo certo — envia para o cadastroback.php
                 form.submit();
             }
         });
     }
+
 };
 
-// LIMPAR URL APÓS O CARREGAMENTO
+// Limpa o ?status= da URL após carregar a página (evita que a mensagem reapareça ao recarregar)
 if (window.location.search.includes('status=')) {
     window.history.replaceState({}, document.title, window.location.pathname);
 }
