@@ -9,7 +9,7 @@ $conexao = mysqli_connect(
 );
 
 if ($conexao) {
-    echo "Conectado!";
+   
 } else {
     echo mysqli_connect_error();
 }

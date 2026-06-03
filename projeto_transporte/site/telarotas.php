@@ -113,10 +113,16 @@ $rotas  = listarRotas($conexao);
                 <td>
                     <div class="lista-acoes">
                         <!-- Editar -->
-                        <a href="editar_ponto.php?id=<?= $ponto['id_ponto'] ?>" class="lista-btn-acao lista-btn-amarelo" title="Editar">
-                            <span class="material-icons">edit</span>
-                        </a>
-                        <!-- Excluir -->
+                        <button
+    type="button"
+    class="lista-btn-acao lista-btn-amarelo btnEditarPonto"
+    data-id="<?= $ponto['id_ponto'] ?>"
+    data-numero="<?= $ponto['numero_ponto'] ?>"
+    data-nome="<?= $ponto['nome_ponto'] ?>"
+    data-endereco="<?= $ponto['endereco'] ?>"
+>
+    <span class="material-icons">edit</span>
+</button>         <!-- Excluir -->
                         <a href="?deletar_ponto=<?= $ponto['id_ponto'] ?>" class="lista-btn-acao lista-btn-vermelho" 
                            onclick="return confirm('Tem certeza que deseja excluir este ponto?')" title="Excluir">
                             <span class="material-icons">delete</span>
@@ -158,9 +164,18 @@ $rotas  = listarRotas($conexao);
                 <td>
                     <div class="lista-acoes">
                         <!-- Editar -->
-                        <a href="editar_rota.php?id=<?= $rota['id_rota'] ?>" class="lista-btn-acao lista-btn-amarelo" title="Editar">
-                            <span class="material-icons">edit</span>
-                        </a>
+                        <button
+    type="button"
+    class="lista-btn-acao lista-btn-amarelo btnEditarRota"
+    data-id="<?= $rota['id_rota'] ?>"
+    data-rota="<?= $rota['nome_rota'] ?>"
+    data-motorista="<?= $rota['motorista_m'] ?>"
+    data-motorista2="<?= $rota['motorista_t'] ?>"
+    data-status="<?= $rota['status'] ?>"
+    data-status2="<?= $rota['status_tarde'] ?>"
+>
+    <span class="material-icons">edit</span>
+</button>
                         <!-- Excluir -->
                         <a href="?deletar_rota=<?= $rota['id_rota'] ?>" class="lista-btn-acao lista-btn-vermelho" 
                            onclick="return confirm('Tem certeza que deseja excluir esta rota?')" title="Excluir">
@@ -176,6 +191,7 @@ $rotas  = listarRotas($conexao);
 </div>
 
 <script>
+
 // Buscas (mantido)
 document.getElementById('buscaPonto').addEventListener('keyup', function() {
     let filtro = this.value.toLowerCase();
@@ -198,6 +214,113 @@ document.getElementById('turnoManha').addEventListener('change', function(){
     document.getElementById('motoristaSecundario').style.display = this.value === 'sim' ? 'block' : 'none';
 });
 </script>
+<!-- MODAL EDITAR PONTO -->
+<div class="modal-custom" id="modalEditarPonto">
 
+    <div class="modal-box">
+
+        <span id="fecharEditarPonto" class="fecharModal">×</span>
+
+        <h2>Editar Ponto</h2>
+
+        <form action="editar_ponto_back.php" method="POST">
+
+            <input type="hidden" name="id" id="editPontoId">
+
+            <label>Número</label>
+            <input type="number" name="numero_ponto" id="editNumeroPonto">
+
+            <label>Nome</label>
+            <input type="text" name="nome_ponto" id="editNomePonto">
+
+            <label>Endereço</label>
+            <input type="text" name="endereco" id="editEnderecoPonto">
+
+            <button type="submit" class="btn-painel">
+                Salvar
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+<div class="modal-custom" id="modalEditarRota" style="display:none;">
+
+    <div class="modal-box">
+
+        <span id="fecharEditarRota" class="fecharModal">×</span>
+
+        <h2>Editar Rota</h2>
+
+        <form action="editar_rota_back.php" method="POST">
+
+            <input type="hidden" name="id" id="editRotaId">
+
+            <label>Nome da Rota</label>
+            <input type="text" name="nome_rota" id="editNomeRota">
+
+            <label>Motorista Principal</label>
+            <input type="text" name="motorista_m" id="editMotoristaRota">
+
+            <label>Motorista Secundário</label>
+            <input type="text" name="motorista_t" id="editMotorista2Rota">
+
+            <label>Status Principal</label>
+            <input type="text" name="status" id="editStatusRota">
+
+            <label>Status Secundário</label>
+            <input type="text" name="status_tarde" id="editStatus2Rota">
+
+            <button type="submit" class="btn-painel">
+                Salvar Alterações
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+<script>
+
+document.querySelectorAll(".btnEditarPonto").forEach(btn => {
+    btn.addEventListener("click", function () {
+
+        document.getElementById("editPontoId").value = this.dataset.id;
+        document.getElementById("editNumeroPonto").value = this.dataset.numero;
+        document.getElementById("editNomePonto").value = this.dataset.nome;
+        document.getElementById("editEnderecoPonto").value = this.dataset.endereco;
+
+        document.getElementById("modalEditarPonto").style.display = "flex";
+    });
+});
+
+document.getElementById("fecharEditarPonto").onclick = function () {
+    document.getElementById("modalEditarPonto").style.display = "none";
+};
+
+</script>
+<script>
+
+document.querySelectorAll(".btnEditarRota").forEach(btn => {
+    btn.addEventListener("click", function () {
+
+        document.getElementById("editRotaId").value = this.dataset.id;
+        document.getElementById("editNomeRota").value = this.dataset.rota;
+        document.getElementById("editMotoristaRota").value = this.dataset.motorista;
+        document.getElementById("editMotorista2Rota").value = this.dataset.motorista2;
+        document.getElementById("editStatusRota").value = this.dataset.status;
+        document.getElementById("editStatus2Rota").value = this.dataset.status2;
+
+        document.getElementById("modalEditarRota").style.display = "flex";
+
+    });
+});
+
+document.getElementById("fecharEditarRota").onclick = function () {
+    document.getElementById("modalEditarRota").style.display = "none";
+};
+
+</script>
 </body>
 </html>
