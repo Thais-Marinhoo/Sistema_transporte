@@ -210,8 +210,14 @@ if (isset($_GET['deletar_rota'])) {
     $id = (int)$_GET['deletar_rota'];
     $conexao->begin_transaction();
     try {
-        $conexao->prepare("DELETE FROM rota_ponto WHERE id_rota = ?")->execute([$id]);
-        $conexao->prepare("DELETE FROM rota WHERE id_rota = ?")->execute([$id]);
+        $stmtDeletePontos = $conexao->prepare("DELETE FROM rota_ponto WHERE id_rota = ?");
+        $stmtDeletePontos->bind_param("i", $id);
+        $stmtDeletePontos->execute();
+
+        $stmt = $conexao->prepare("DELETE FROM rota WHERE id_rota = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+
         $conexao->commit();
         header("Location: telarotas.php?status=sucesso_rdeletada");
     } catch (Exception $e) {
