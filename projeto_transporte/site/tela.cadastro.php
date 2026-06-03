@@ -1,12 +1,3 @@
-<?php
-session_start();
-
-if(!isset($_SESSION['email'])){
-    header("Location: ../index.php");
-    exit();
-}
-?>
-
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -93,13 +84,10 @@ if(!isset($_SESSION['email'])){
 
                         <select name="curso[]">
 
-                            <option value="Informatica">
-                             Informática
-                        </option>
-
-                        <option value="DS">
-                                 Desenvolvimento de Sistemas
-                                </option>
+                            <option value="Informatica">Informática</option>
+                            <option value="DS">Desenvolvimento de Sistemas</option>
+                            <option value="Enfermagem">Enfermagem</option>
+                            <option value="Administracao">Administração</option>
 
                         </select>
 

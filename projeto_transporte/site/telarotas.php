@@ -101,8 +101,10 @@ $rotas  = listarRotas($conexao);
     <div class="rota-card">
         <h5 class="card-title">Pontos Cadastrados</h5>
         
-        <input type="text" id="buscaPonto" placeholder="🔎 Buscar ponto por nome ou endereço..." 
-               style="width:100%; padding:12px; margin-bottom:15px; border-radius:8px; border:1px solid #ddd;">
+        <div class="lista-campo-busca">
+            <span class="material-icons">search</span>
+            <input type="text" id="buscaPonto" placeholder="Buscar ponto por nome ou endereço...">
+        </div>
 
         <table class="tabela-rotas" id="tabelaPontos">
             <tr>
@@ -111,31 +113,44 @@ $rotas  = listarRotas($conexao);
                 <th>Endereço</th>
                 <th>Ações</th>
             </tr>
-            <?php 
-            mysqli_data_seek($pontos, 0);
-            while ($ponto = mysqli_fetch_assoc($pontos)): ?>
+            <?php mysqli_data_seek($pontos, 0); while ($ponto = mysqli_fetch_assoc($pontos)): ?>
             <tr>
                 <td><?= $ponto['numero_ponto'] ?></td>
                 <td><?= $ponto['nome_ponto'] ?></td>
                 <td><?= $ponto['endereco'] ?></td>
                 <td>
-                    <a href="?deletar_ponto=<?= $ponto['id_ponto'] ?>" 
-                       class="btn-action delete"
-                       onclick="return confirm('Tem certeza que deseja excluir este ponto?')">
-                        🗑 Excluir
-                    </a>
+                    <div class="lista-acoes">
+                        <!-- Editar -->
+                        <button
+    type="button"
+    class="lista-btn-acao lista-btn-amarelo btnEditarPonto"
+    data-id="<?= htmlspecialchars($ponto['id_ponto']) ?>"
+    data-numero="<?= htmlspecialchars($ponto['numero_ponto']) ?>"
+    data-nome="<?= htmlspecialchars($ponto['nome_ponto']) ?>"
+    data-endereco="<?= htmlspecialchars($ponto['endereco']) ?>"
+>
+    <span class="material-icons">edit</span>
+</button>         <!-- Excluir -->
+                        <a href="?deletar_ponto=<?= $ponto['id_ponto'] ?>" class="lista-btn-acao lista-btn-vermelho" 
+                           onclick="return confirm('Tem certeza que deseja excluir este ponto?')" title="Excluir">
+                            <span class="material-icons">delete</span>
+                        </a>
+                    </div>
                 </td>
             </tr>
             <?php endwhile; ?>
         </table>
     </div>
 
+
     <!-- ====================== TABELA DE ROTAS ====================== -->
     <div class="rota-card">
         <h5 class="card-title">Rotas Cadastradas</h5>
         
-        <input type="text" id="buscaRota" placeholder="🔎 Buscar por rota, motorista ou ponto..." 
-               style="width:100%; padding:12px; margin-bottom:15px; border-radius:8px; border:1px solid #ddd;">
+        <div class="lista-campo-busca">
+            <span class="material-icons">search</span>
+            <input type="text" id="buscaRota" placeholder="Buscar por rota, motorista ou ponto...">
+        </div>
 
         <table class="tabela-rotas" id="tabelaRotas">
             <tr>
@@ -156,15 +171,98 @@ $rotas  = listarRotas($conexao);
                 <td><?= !empty($rota['status_tarde']) ? $rota['status_tarde'] : '<span style="color:#888;">Não há</span>' ?></td>
                 <td><?= $rota['pontos_nomes'] ?: 'Nenhum ponto' ?></td>
                 <td>
-                    <a href="?deletar_rota=<?= $rota['id_rota'] ?>" 
-                       class="btn-action delete"
-                       onclick="return confirm('Tem certeza que deseja excluir esta rota?')">
-                        🗑 Excluir
-                    </a>
+                    <div class="lista-acoes">
+                        <!-- Editar -->
+                        <button
+    type="button"
+    class="lista-btn-acao lista-btn-amarelo btnEditarRota"
+    data-id="<?= htmlspecialchars($rota['id_rota']) ?>"
+    data-rota="<?= htmlspecialchars($rota['nome_rota']) ?>"
+    data-motorista="<?= htmlspecialchars($rota['motorista_m']) ?>"
+    data-motorista2="<?= htmlspecialchars($rota['motorista_t']) ?>"
+    data-status="<?= htmlspecialchars($rota['status']) ?>"
+    data-status2="<?= htmlspecialchars($rota['status_tarde']) ?>"
+>
+    <span class="material-icons">edit</span>
+</button>
+                        <!-- Excluir -->
+                        <a href="?deletar_rota=<?= $rota['id_rota'] ?>" class="lista-btn-acao lista-btn-vermelho" 
+                           onclick="return confirm('Tem certeza que deseja excluir esta rota?')" title="Excluir">
+                            <span class="material-icons">delete</span>
+                        </a>
+                    </div>
                 </td>
             </tr>
             <?php endwhile; ?>
         </table>
+    </div>
+
+</div>
+
+<!-- MODAL EDITAR PONTO -->
+<div class="modal-custom" id="modalEditarPonto" style="display:none;">
+
+    <div class="modal-box">
+
+        <span id="fecharEditarPonto" class="fecharModal">×</span>
+
+        <h2>Editar Ponto</h2>
+
+        <form action="editar_ponto_back.php" method="POST">
+
+            <input type="hidden" name="id" id="editPontoId">
+
+            <label>Número</label>
+            <input type="number" name="numero_ponto" id="editNumeroPonto">
+
+            <label>Nome</label>
+            <input type="text" name="nome_ponto" id="editNomePonto">
+
+            <label>Endereço</label>
+            <input type="text" name="endereco" id="editEnderecoPonto">
+
+            <button type="submit" class="btn-painel">
+                Salvar
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+<div class="modal-custom" id="modalEditarRota" style="display:none;">
+
+    <div class="modal-box">
+
+        <span id="fecharEditarRota" class="fecharModal">×</span>
+
+        <h2>Editar Rota</h2>
+
+        <form action="editar_rota_back.php" method="POST">
+
+            <input type="hidden" name="id" id="editRotaId">
+
+            <label>Nome da Rota</label>
+            <input type="text" name="nome_rota" id="editNomeRota">
+
+            <label>Motorista Principal</label>
+            <input type="text" name="motorista_m" id="editMotoristaRota">
+
+            <label>Motorista Secundário</label>
+            <input type="text" name="motorista_t" id="editMotorista2Rota">
+
+            <label>Status Principal</label>
+            <input type="text" name="status" id="editStatusRota">
+
+            <label>Status Secundário</label>
+            <input type="text" name="status_tarde" id="editStatus2Rota">
+
+            <button type="submit" class="btn-painel">
+                Salvar Alterações
+            </button>
+
+        </form>
+
     </div>
 
 </div>

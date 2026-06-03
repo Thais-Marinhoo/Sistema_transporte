@@ -2,11 +2,27 @@
 include_once '../conexao.php';
 session_start();
 
-// ====================== DEBUG (remova depois) ======================
-if (isset($_POST['salvar_rota'])) {
-    echo "<h3>DEBUG: Formulário recebido!</h3>";
-    echo "Nome Rota: " . ($_POST['nome_rota'] ?? 'vazio') . "<br>";
-    echo "Motorista: " . ($_POST['motorista_m'] ?? 'vazio') . "<br>";
+
+// ====================== BUSCAR PONTO PARA EDITAR ======================
+$pontoEditar = null;
+
+if (isset($_GET['editar_ponto'])) {
+
+    $id_editar = (int) $_GET['editar_ponto'];
+
+    $stmt = $conexao->prepare("
+        SELECT * 
+        FROM ponto 
+        WHERE id_ponto = ?
+    ");
+
+    $stmt->bind_param("i", $id_editar);
+
+    $stmt->execute();
+
+    $resultado = $stmt->get_result();
+
+    $pontoEditar = $resultado->fetch_assoc();
 }
 
 // ====================== SALVAR PONTO ======================
@@ -222,6 +238,8 @@ function listarRotas($conexao) {
         ORDER BY r.id_rota DESC";
     return mysqli_query($conexao, $sql);
 }
+///////////////////listar/////////////////////////////////
+
 
 function atualizarAlunos($conexao) {
     // 1. Função matemática interna para o cálculo de distância
@@ -281,4 +299,6 @@ function atualizarAlunos($conexao) {
     }
     return true;
 }
+
+////////////////////////////////////////////////////
 ?>

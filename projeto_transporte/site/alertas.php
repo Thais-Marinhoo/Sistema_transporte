@@ -5,6 +5,7 @@ $status_atual = $_GET['status'] ?? '';
 // 1. Dicionário de todas as mensagens de ERRO do sistema
 $mensagens_erro = [
     'endereco'   => 'Não foi possível encontrar as coordenadas para o endereço digitado. Verifique a Ortografia ou se escreveu o nome da forma indicada.',
+    'endereco_invalido' => 'O novo endereço digitado na edição não foi localizado em Crateús. Verifique a ortografia.',
     'erro_r'      => 'Não foi possível cadastrar a rota. Verifique se preencheu todos os campos obrigatórios e selecionou pelo menos um ponto.',
     'sem_pontos' => 'Não é possível deletar o último ponto do sistema. Cadastre outro ponto antes.',
     'erro_pdeletar' => 'Não é possível deletar o último ponto do sistema. Cadastre outro ponto antes.',
@@ -18,6 +19,9 @@ $mensagens_sucesso = [
     'sucesso_pdeletado' => 'Ponto deletado com sucesso!',
     'sucesso_rdeletada' => 'Rota deletada com sucesso!',
     'sucesso_aluno' => 'Aluno cadastrado com sucesso!',
+    'sucesso_edicao' => 'Dados do aluno atualizados e rota recalculada com sucesso!',
+    'sucesso_exclusao' => 'Aluno removido do sistema com sucesso.',
+    'sucesso_ano' => 'Virada de ano concluída! Alunos promovidos e turmas atualizadas.',
     'sucesso_r' => 'Rota cadastrada com sucesso!'
 ];
 

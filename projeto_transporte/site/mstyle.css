@@ -792,3 +792,137 @@ body{
     }
 
 }
+
+/* =========================================================================
+   UNIÃO DE DESIGN: MODAIS, BOTÕES DE AÇÕES E BLINDAGEM DE ÍCONES
+   ========================================================================= */
+
+/* 1. Blindagem Física dos Ícones para evitar que virem texto corrido */
+.lista-acoes .material-icons,
+.lista-btn-acao .material-icons {
+    font-family: 'Material Icons' !important;
+    font-size: 20px !important;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* 2. Estrutura dos Modais Flutuantes (Design original da Nayra) */
+.modal-custom {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.45);
+    display: none; /* Começam escondidos */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-box {
+    width: 420px;
+    background: #fff;
+    border-radius: 24px;
+    padding: 35px;
+    position: relative;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2);
+}
+
+.modal-box h2 {
+    color: #0b2c5f;
+    margin-bottom: 25px;
+    font-size: 30px;
+}
+
+.modal-box input {
+    width: 100%;
+    height: 52px;
+    border: 1px solid #ddd;
+    border-radius: 14px;
+    padding-left: 15px;
+    margin-bottom: 18px;
+    background: #f9fafc;
+    box-sizing: border-box;
+}
+
+.modal-box input[readonly] {
+    background-color: #f4f6f9;
+    color: #777;
+    cursor: not-allowed;
+}
+
+.fecharModal {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: 28px;
+    cursor: pointer;
+    color: #888;
+    transition: 0.2s;
+}
+
+.fecharModal:hover {
+    color: #dc3545;
+}
+
+.btn-painel {
+    width: 100%;
+    height: 55px;
+    border: none;
+    border-radius: 14px;
+    background: #ffc107;
+    color: #0b1f3a;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+.btn-painel:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+/* 3. Melhoria Otimizada das Células de Ações para Casar com o HTML */
+.lista-acoes {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.lista-btn-acao,
+.btn-vermelho {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+    text-decoration: none;
+}
+
+.lista-btn-acao:hover,
+.btn-vermelho:hover {
+    transform: translateY(-2px);
+}
+
+/* Garante o estilo da lixeira independente do padrão de classe usado */
+.btn-vermelho,
+.lista-btn-vermelho {
+    background: #ffe6e6 !important;
+    color: #dc3545 !important;
+}
+
+.btn-vermelho:hover,
+.lista-btn-vermelho:hover {
+    background: #ffcccc !important;
+    color: #c82333 !important;
+}
