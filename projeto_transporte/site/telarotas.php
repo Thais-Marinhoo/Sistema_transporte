@@ -1,6 +1,7 @@
 <?php
 include 'rotas_back.php';
 
+
 if (!isset($_SESSION['email'])) {
     header("Location: ../index.php");
     exit();
@@ -14,9 +15,8 @@ $rotas  = listarRotas($conexao);
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rotas - Rota Certa</title>
-    <link rel="stylesheet" href="mstyle.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="mstyle.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
@@ -29,35 +29,40 @@ $rotas  = listarRotas($conexao);
     <h1 class="titulo">Cadastro de Rotas</h1>
     <p class="sub">Gerencie pontos, ônibus e rotas do sistema.</p>
 
-    <?php if (isset($_GET['sucesso'])): ?>
-        <div class="alert alert-success"><?= htmlspecialchars($_GET['sucesso']) ?></div>
-    <?php endif; ?>
-    <?php if (isset($_GET['erro'])): ?>
-        <div class="alert alert-danger"><?= htmlspecialchars($_GET['erro']) ?></div>
-    <?php endif; ?>
+    <!-- Mensagens do Sistema -->
+    <?php include 'alertas.php'; ?>
+    
 
     <div class="cadastro-container">
-        <!-- CADASTRO PONTO e CADASTRO ÔNIBUS (mantido igual) -->
+
+        <!-- CADASTRO PONTO -->
         <div class="rota-card">
             <h5 class="card-title">Cadastro de Ponto</h5>
-            <form method="POST">
+            <form method="POST" action="">
                 <label>Número do ponto</label>
-                <input type="number" name="numero_ponto" placeholder="Digite o número" required>
+                <input type="number" name="numero_ponto" placeholder="Digite o número">
+
                 <label>Nome do ponto</label>
-                <input type="text" name="nome_ponto" placeholder="Digite o nome do ponto" required>
+                <input type="text" name="nome_ponto" placeholder="Digite o nome do ponto">
+
                 <label>Endereço</label>
-                <input type="text" name="endereco" placeholder="Digite o endereço" required>
+                <input type="text" name="endereco" placeholder="Digite o endereço">
+
                 <button class="btn-salvar" type="submit" name="salvar_ponto">Salvar Ponto</button>
             </form>
         </div>
 
+        <!-- CADASTRO ÔNIBUS -->
         <div class="rota-card">
             <h5 class="card-title">Cadastro de Ônibus</h5>
-            <form method="POST">
+            <form method="POST" action="">
+
                 <label>Nome do motorista</label>
-                <input type="text" name="motorista_m" placeholder="Digite o nome" required>
+                <input type="text" name="motorista_m" placeholder="Digite o nome">
+
                 <label>Nome da rota</label>
-                <input type="text" name="nome_rota" placeholder="Digite o nome da rota" required>
+                <input type="text" name="nome_rota" placeholder="Digite o nome da rota">
+
                 <label>Pontos por onde passa <small>(Segure CTRL para vários)</small></label>
                 <select name="pontos[]" class="rota-select" multiple size="6">
                     <?php 
@@ -68,6 +73,7 @@ $rotas  = listarRotas($conexao);
                         </option>
                     <?php endwhile; ?>
                 </select>
+
                 <label>Status do ônibus</label>
                 <input type="text" name="status" placeholder="Ex: Terceirizado ou Não" required>
 
@@ -80,6 +86,7 @@ $rotas  = listarRotas($conexao);
                 <div id="motoristaSecundario" style="display: none;">
                     <label>Nome do motorista secundário</label>
                     <input type="text" name="motorista_t" placeholder="Digite o nome">
+
                     <label>Status do ônibus secundário</label>
                     <input type="text" name="terceirizado_secundario" placeholder="Ex: Terceirizado ou Não">
                 </div>
@@ -87,6 +94,7 @@ $rotas  = listarRotas($conexao);
                 <button class="btn-salvar" type="submit" name="salvar_rota">Salvar Ônibus</button>
             </form>
         </div>
+
     </div>
 
     <!-- ====================== TABELA DE PONTOS ====================== -->
@@ -116,10 +124,10 @@ $rotas  = listarRotas($conexao);
                         <button
     type="button"
     class="lista-btn-acao lista-btn-amarelo btnEditarPonto"
-    data-id="<?= $ponto['id_ponto'] ?>"
-    data-numero="<?= $ponto['numero_ponto'] ?>"
-    data-nome="<?= $ponto['nome_ponto'] ?>"
-    data-endereco="<?= $ponto['endereco'] ?>"
+    data-id="<?= htmlspecialchars($ponto['id_ponto']) ?>"
+    data-numero="<?= htmlspecialchars($ponto['numero_ponto']) ?>"
+    data-nome="<?= htmlspecialchars($ponto['nome_ponto']) ?>"
+    data-endereco="<?= htmlspecialchars($ponto['endereco']) ?>"
 >
     <span class="material-icons">edit</span>
 </button>         <!-- Excluir -->
@@ -133,6 +141,7 @@ $rotas  = listarRotas($conexao);
             <?php endwhile; ?>
         </table>
     </div>
+
 
     <!-- ====================== TABELA DE ROTAS ====================== -->
     <div class="rota-card">
@@ -167,12 +176,12 @@ $rotas  = listarRotas($conexao);
                         <button
     type="button"
     class="lista-btn-acao lista-btn-amarelo btnEditarRota"
-    data-id="<?= $rota['id_rota'] ?>"
-    data-rota="<?= $rota['nome_rota'] ?>"
-    data-motorista="<?= $rota['motorista_m'] ?>"
-    data-motorista2="<?= $rota['motorista_t'] ?>"
-    data-status="<?= $rota['status'] ?>"
-    data-status2="<?= $rota['status_tarde'] ?>"
+    data-id="<?= htmlspecialchars($rota['id_rota']) ?>"
+    data-rota="<?= htmlspecialchars($rota['nome_rota']) ?>"
+    data-motorista="<?= htmlspecialchars($rota['motorista_m']) ?>"
+    data-motorista2="<?= htmlspecialchars($rota['motorista_t']) ?>"
+    data-status="<?= htmlspecialchars($rota['status']) ?>"
+    data-status2="<?= htmlspecialchars($rota['status_tarde']) ?>"
 >
     <span class="material-icons">edit</span>
 </button>
@@ -190,32 +199,8 @@ $rotas  = listarRotas($conexao);
 
 </div>
 
-<script>
-
-// Buscas (mantido)
-document.getElementById('buscaPonto').addEventListener('keyup', function() {
-    let filtro = this.value.toLowerCase();
-    let linhas = document.querySelectorAll('#tabelaPontos tr');
-    for(let i = 1; i < linhas.length; i++) {
-        linhas[i].style.display = linhas[i].textContent.toLowerCase().includes(filtro) ? '' : 'none';
-    }
-});
-
-document.getElementById('buscaRota').addEventListener('keyup', function() {
-    let filtro = this.value.toLowerCase();
-    let linhas = document.querySelectorAll('#tabelaRotas tr');
-    for(let i = 1; i < linhas.length; i++) {
-        linhas[i].style.display = linhas[i].textContent.toLowerCase().includes(filtro) ? '' : 'none';
-    }
-});
-
-// Motorista secundário
-document.getElementById('turnoManha').addEventListener('change', function(){
-    document.getElementById('motoristaSecundario').style.display = this.value === 'sim' ? 'block' : 'none';
-});
-</script>
 <!-- MODAL EDITAR PONTO -->
-<div class="modal-custom" id="modalEditarPonto">
+<div class="modal-custom" id="modalEditarPonto" style="display:none;">
 
     <div class="modal-box">
 
@@ -281,46 +266,8 @@ document.getElementById('turnoManha').addEventListener('change', function(){
     </div>
 
 </div>
-<script>
 
-document.querySelectorAll(".btnEditarPonto").forEach(btn => {
-    btn.addEventListener("click", function () {
+<script src="rotas.js"></script>
 
-        document.getElementById("editPontoId").value = this.dataset.id;
-        document.getElementById("editNumeroPonto").value = this.dataset.numero;
-        document.getElementById("editNomePonto").value = this.dataset.nome;
-        document.getElementById("editEnderecoPonto").value = this.dataset.endereco;
-
-        document.getElementById("modalEditarPonto").style.display = "flex";
-    });
-});
-
-document.getElementById("fecharEditarPonto").onclick = function () {
-    document.getElementById("modalEditarPonto").style.display = "none";
-};
-
-</script>
-<script>
-
-document.querySelectorAll(".btnEditarRota").forEach(btn => {
-    btn.addEventListener("click", function () {
-
-        document.getElementById("editRotaId").value = this.dataset.id;
-        document.getElementById("editNomeRota").value = this.dataset.rota;
-        document.getElementById("editMotoristaRota").value = this.dataset.motorista;
-        document.getElementById("editMotorista2Rota").value = this.dataset.motorista2;
-        document.getElementById("editStatusRota").value = this.dataset.status;
-        document.getElementById("editStatus2Rota").value = this.dataset.status2;
-
-        document.getElementById("modalEditarRota").style.display = "flex";
-
-    });
-});
-
-document.getElementById("fecharEditarRota").onclick = function () {
-    document.getElementById("modalEditarRota").style.display = "none";
-};
-
-</script>
 </body>
 </html>

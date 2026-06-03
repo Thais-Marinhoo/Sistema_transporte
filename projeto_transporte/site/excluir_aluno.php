@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 
 if(!isset($_SESSION['email'])){
@@ -16,14 +15,12 @@ if(!isset($_GET['id'])){
 $id = intval($_GET['id']);
 
 $sql = "DELETE FROM aluno WHERE id_aluno = $id";
-
 $resultado = mysqli_query($conexao, $sql);
 
 if(!$resultado){
     die("Erro ao excluir: " . mysqli_error($conexao));
 }
 
-header("Location: lista.alunos.php");
+header("Location: lista.alunos.php?status=sucesso_exclusao");
 exit();
-
 ?>

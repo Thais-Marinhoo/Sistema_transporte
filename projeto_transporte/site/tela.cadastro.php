@@ -1,12 +1,3 @@
-<?php
-session_start();
-
-if(!isset($_SESSION['email'])){
-    header("Location: ../index.php");
-    exit();
-}
-?>
-
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -28,6 +19,9 @@ if(!isset($_SESSION['email'])){
 
 <?php include 'menu.php'; ?>
 
+<!-- Mensagens do Sistema -->
+    <?php include 'alertas.php'; ?>
+
 <div class="conteudo">
 
     <h1 class="titulo">
@@ -35,7 +29,7 @@ if(!isset($_SESSION['email'])){
     </h1>
 
     <!-- FORM -->
-    <form action="cadastrooback.php" method="POST">
+    <form action="cadastroback.php" method="POST" id="formCA">
 
         <table class="tabela-alunos" id="tabelaAlunos">
 
@@ -69,6 +63,7 @@ if(!isset($_SESSION['email'])){
                         <input 
                      type="text"
                      name="nome[]"
+                     disabled
                         >
 
                     </td>
@@ -89,13 +84,10 @@ if(!isset($_SESSION['email'])){
 
                         <select name="curso[]">
 
-                            <option value="Informatica">
-                             Informática
-                        </option>
-
-                        <option value="DS">
-                                 Desenvolvimento de Sistemas
-                                </option>
+                            <option value="Informatica">Informática</option>
+                            <option value="DS">Desenvolvimento de Sistemas</option>
+                            <option value="Enfermagem">Enfermagem</option>
+                            <option value="Administracao">Administração</option>
 
                         </select>
 
@@ -105,7 +97,7 @@ if(!isset($_SESSION['email'])){
 
                         <input 
                      type="text"
-                     name="endereco[]"
+                     name="endereco[]" disabled
                         >
 
                     </td>
@@ -177,7 +169,7 @@ if(!isset($_SESSION['email'])){
 
 </div>
 
-<script src="cadastro.js?v=193856"></script>
+<script src="cadastro.js"></script>
 
 </body>
 </html>
