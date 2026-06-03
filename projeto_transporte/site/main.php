@@ -1,30 +1,28 @@
 <?php
 session_start();
-if(!isset($_SESSION['email'])){
+if (!isset($_SESSION['email'])) {
     header("Location: ../index.php");
     exit();
 }
+include '../conexao.php';
+
+// Contagens reais do banco
+$totalAlunos = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) as total FROM aluno"))['total'];
+$totalRotas  = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) as total FROM rota"))['total'];
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <title>Dashboard - Rota Certa</title>
-
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Ícones -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-    <!-- CSS da Home -->
     <link rel="stylesheet" href="mstyle.css">
 </head>
 
 <body>
 
 <?php include 'menu.php'; ?>
-
 
 <div class="conteudo">
 
@@ -35,7 +33,7 @@ if(!isset($_SESSION['email'])){
             <span class="material-icons icon">groups</span>
             <div>
                 <p>Total de alunos</p>
-                <h2>350</h2>
+                <h2><?= $totalAlunos ?></h2>
             </div>
         </div>
 
@@ -43,22 +41,30 @@ if(!isset($_SESSION['email'])){
             <span class="material-icons icon">route</span>
             <div>
                 <p>Total de rotas</p>
-                <h2>9</h2>
+                <h2><?= $totalRotas ?></h2>
             </div>
         </div>
 
         <div class="card-info">
             <span class="material-icons icon">directions_bus</span>
             <div>
-                <p>Ônibus ativos</p>
-                <h2>15</h2>
+                <p>Total de ônibus</p>
+                <h2><?= $totalRotas ?></h2>
             </div>
         </div>
     </div>
 
-    <div class="mapa">
-       
+    <!-- BOTÃO PDF -->
+    <div style="margin-top: 30px;">
+        <a href="gerar_pdf.php" target="_blank">
+            <button class="btn-salvar" style="display:inline-flex; align-items:center; gap:10px; width:auto; padding: 0 30px;">
+                <span class="material-icons" style="font-size:22px;">picture_as_pdf</span>
+                Gerar PDF — Alunos por Ponto
+            </button>
+        </a>
     </div>
+
+    <div class="mapa"></div>
 
 </div>
 

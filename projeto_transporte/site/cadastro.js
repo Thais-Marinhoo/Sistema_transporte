@@ -1,127 +1,60 @@
-// ESPERA A PÁGINA CARREGAR
-window.onload = function(){
+window.onload = function () {
 
-    // PEGA ELEMENTOS
-    const linhaModelo =
-    document.querySelector(".linha-modelo");
+    const linhaModelo = document.querySelector(".linha-modelo");
+    const corpoTabela = document.getElementById("corpoTabela");
+    const btnAdd = document.getElementById("btnAdd");
+    const form = document.getElementById("formCA");
 
-    const corpoTabela =
-    document.getElementById("corpoTabela");
+    function criarLinha() {
+        let nova = linhaModelo.cloneNode(true);
 
-    const btnAdd =
-    document.getElementById("btnAdd");
+        nova.classList.remove("linha-modelo");
+        nova.style.display = "table-row";
 
-    const form =
-    document.querySelector("form");
-
-    // CRIAR LINHA
-    function criarLinha(){
-
-        let novaLinha =
-        linhaModelo.cloneNode(true);
-
-        // REMOVE CLASSE MODELO
-        novaLinha.classList.remove("linha-modelo");
-
-        // MOSTRA LINHA
-        novaLinha.style.display = "table-row";
-
-        // LIMPA INPUTS
-        novaLinha
-        .querySelectorAll("input")
-        .forEach(input => {
-
-            input.value = "";
-
+        nova.querySelectorAll("input, select").forEach(el => {
+            el.removeAttribute("disabled");
+            if (el.tagName === "INPUT") el.value = "";
         });
 
-        // ADICIONA
-        corpoTabela.appendChild(novaLinha);
-
+        corpoTabela.appendChild(nova);
     }
 
-    // PRIMEIRA LINHA
     criarLinha();
 
-    // BOTÃO ADICIONAR
-    btnAdd.addEventListener("click", function(){
-
-        let quantidade =
-        parseInt(
-            document.getElementById("quantidadeLinhas").value
-        ) || 1;
-
-        for(let i = 0; i < quantidade; i++){
-
+    btnAdd.onclick = function () {
+        let qtd = parseInt(document.getElementById("quantidadeLinhas").value) || 1;
+        for (let i = 0; i < qtd; i++) {
             criarLinha();
-
         }
+    };
 
+    document.addEventListener("click", function (e) {
+        if (e.target.classList.contains("btn-remover")) {
+            e.target.closest("tr").remove();
+        }
     });
 
-    // REMOVER LINHA
-    document.addEventListener("click", function(e){
+    // 🔥 SUBMIT COM VALIDAÇÃO SIMPLES (SEM TRAVAR ENVIO)
+    form.addEventListener("submit", function (e) {
 
-        let botao =
-        e.target.closest(".btn-remover");
+        let linhas = document.querySelectorAll("tbody tr:not(.linha-modelo)");
+        let erro = false;
 
-        if(botao){
-
-            let linhas =
-            corpoTabela.querySelectorAll("tr:not(.linha-modelo)");
-
-            // NÃO DEIXA APAGAR TODAS
-            if(linhas.length <= 1){
-
-                alert("Precisa existir pelo menos uma linha.");
-
-                return;
-
-            }
-
-            botao.closest("tr").remove();
-
-        }
-
-    });
-
-    // VALIDAR FORMULÁRIO
-    form.addEventListener("submit", function(e){
-
-        let linhas =
-        corpoTabela.querySelectorAll("tr:not(.linha-modelo)");
-
-        let possuiAluno = false;
-
-        linhas.forEach(function(linha){
-
-            let nome =
-            linha.querySelector('input[name="nome[]"]')
-            .value
-            .trim();
-
-            let endereco =
-            linha.querySelector('input[name="endereco[]"]')
-            .value
-            .trim();
-
-            if(nome !== "" && endereco !== ""){
-
-                possuiAluno = true;
-
-            }
-
+        linhas.forEach(linha => {
+            linha.querySelectorAll("input").forEach(input => {
+                if (input.value.trim() === "") {
+                    erro = true;
+                    input.style.border = "2px solid red";
+                }
+            });
         });
 
-        // BLOQUEIA ENVIO
-        if(!possuiAluno){
-
+        if (erro) {
             e.preventDefault();
-
-            alert("Cadastre pelo menos um aluno antes de salvar.");
-
+            alert("Preencha todos os campos antes de salvar.");
         }
 
+        // se não tiver erro → deixa enviar normal
     });
 
 };

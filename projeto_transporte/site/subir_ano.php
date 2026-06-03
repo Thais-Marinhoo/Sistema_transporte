@@ -38,7 +38,8 @@ $sqlPrimeiro = "
 
 mysqli_query($conexao, $sqlPrimeiro);
 
-header("Location: lista.alunos.php");
+header("Location: lista.alunos.php?status=sucesso_ano");
+
 exit();
 
 ?>
