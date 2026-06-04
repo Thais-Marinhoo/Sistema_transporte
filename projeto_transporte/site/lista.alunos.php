@@ -89,10 +89,10 @@ include 'rotas_back.php';
                 <tbody>
                 <?php
                 // Query unificada que busca as informações do ponto automaticamente
-                $sql = "SELECT aluno.*, ponto.nome_ponto 
-                        FROM aluno 
-                        INNER JOIN ponto ON aluno.id_ponto = ponto.id_ponto 
-                        ORDER BY aluno.id_aluno DESC";
+                $sql = "SELECT aluno.*, ponto.nome_ponto
+        FROM aluno
+        LEFT JOIN ponto ON aluno.id_ponto = ponto.id_ponto
+        ORDER BY aluno.id_aluno DESC";
                 
                 $resultado = mysqli_query($conexao, $sql);
                 while($aluno = mysqli_fetch_assoc($resultado)){
