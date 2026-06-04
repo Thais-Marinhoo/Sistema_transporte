@@ -28,9 +28,6 @@ window.onload = function(){
         corpoTabela.appendChild(novaLinha);
     }
 
-    // ❌ NÃO cria linha automaticamente (CORRETO)
-    // criarLinha();
-
     btnAdd.addEventListener("click", function(){
         let quantidade = parseInt(document.getElementById("quantidadeLinhas").value) || 1;
 
@@ -52,6 +49,7 @@ window.onload = function(){
         form.addEventListener('submit', async function(event) {
             event.preventDefault();
 
+            // remove mensagem anterior
             const erroAntigo = document.getElementById('erro-dinamico-js');
             if (erroAntigo) erroAntigo.remove();
 
@@ -61,6 +59,7 @@ window.onload = function(){
             let linhasVisiveis = form.querySelectorAll('tr:not(.linha-modelo)');
 
             for (let linha of linhasVisiveis) {
+
                 let inputNome = linha.querySelector('input[name="nome[]"]');
                 let inputEndereco = linha.querySelector('input[name="endereco[]"]');
 
@@ -79,18 +78,48 @@ window.onload = function(){
                         let resposta = await fetch(urlApi);
                         let dados = await resposta.json();
 
-                        if (dados.length === 0 || !dados[0].lat) {
+                        if (!dados || dados.length === 0 || !dados[0].lat) {
                             temErroEndereco = true;
+
+                            inputEndereco.style.border = "2px solid red";
+                            inputEndereco.style.backgroundColor = "#ffe6e6";
                         }
 
                     } catch (error) {
                         console.error(error);
+                        temErroEndereco = true;
                     }
                 }
             }
 
+            // 🔥 MENSAGEM ESTILO alertas.php
             if (temErroCampo || temErroEndereco) {
-                alert("Corrija os erros antes de enviar");
+
+                let mensagem = 'Por favor, preencha todos os campos. Não deixe linhas em branco.';
+
+                if (temErroEndereco && !temErroCampo) {
+                    mensagem = 'Um ou mais endereços não foram localizados em Crateús. Verifique a ortografia.';
+                } else if (temErroCampo && temErroEndereco) {
+                    mensagem = 'Verifique os campos destacados: há informações em branco e endereços inválidos.';
+                }
+
+                const caixaErro = document.createElement('div');
+                caixaErro.id = 'erro-dinamico-js';
+
+                caixaErro.style.cssText =
+                    "display:flex; align-items:center; gap:12px;" +
+                    "background-color:#fff5f5; border-left:4px solid #e53e3e;" +
+                    "border-radius:6px; padding:16px; margin:15px 0;" +
+                    "box-shadow:0 2px 8px rgba(0,0,0,0.05);";
+
+                caixaErro.innerHTML =
+                    '<span class="material-icons" style="color:#e53e3e; font-size:24px;">error_outline</span>' +
+                    '<p style="margin:0; color:#c53030; font-size:0.95rem; line-height:1.5; font-weight:500;">' +
+                    mensagem + '</p>';
+
+                form.parentNode.insertBefore(caixaErro, form);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
             } else {
                 form.submit();
             }

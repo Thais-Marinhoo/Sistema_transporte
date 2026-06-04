@@ -1,12 +1,15 @@
 <?php
 session_start();
+
 if (!isset($_SESSION['email'])) {
     header("Location: ../index.php");
     exit();
 }
+
 include '../conexao.php';
- 
-// Busca pontos com a quantidade de alunos em cada um
+require_once __DIR__ . '/fpdf19/fpdf.php';
+
+// BUSCA DADOS
 $sql = "
     SELECT 
         p.numero_ponto,
@@ -17,159 +20,101 @@ $sql = "
     GROUP BY p.id_ponto, p.numero_ponto, p.nome_ponto
     ORDER BY p.numero_ponto ASC
 ";
+
 $resultado = mysqli_query($conexao, $sql);
- 
+
 $total_alunos = 0;
 $linhas = [];
+
 while ($linha = mysqli_fetch_assoc($resultado)) {
     $total_alunos += $linha['qtd_alunos'];
     $linhas[] = $linha;
 }
+
+// CRIA PDF
+$pdf = new FPDF();
+$pdf->AddPage();
+
+/* =========================
+   LOGO CENTRALIZADA (TOPO)
+========================= */
+$logo = __DIR__ . '/imagem.jpeg'; // ajuste extensão se necessário
+
+if (file_exists($logo)) {
+    $logoWidth = 25; // tamanho pequeno e moderno
+    $pageWidth = 210;
+    $x = ($pageWidth - $logoWidth) / 2;
+
+    $pdf->Image($logo, $x, 8, $logoWidth);
+}
+
+$pdf->Ln(28); // espaço após logo
+
+/* =========================
+   TÍTULO MODERNO
+========================= */
+$pdf->SetFont('Arial', 'B', 16);
+$pdf->SetTextColor(30, 30, 30);
+$pdf->Cell(0, 8, utf8_decode('Alunos por Ponto de Embarque'), 0, 1, 'C');
+
+$pdf->SetFont('Arial', '', 10);
+$pdf->SetTextColor(120, 120, 120);
+$pdf->Cell(0, 6, utf8_decode('Sistema Rota Certa • Gerado em ' . date('d/m/Y H:i')), 0, 1, 'C');
+
+$pdf->Ln(6);
+
+/* =========================
+   CABEÇALHO DA TABELA
+========================= */
+$pdf->SetFont('Arial', 'B', 11);
+$pdf->SetFillColor(245, 246, 250); // cinza claro moderno
+$pdf->SetTextColor(40, 40, 40);
+
+$pdf->Cell(40, 10, utf8_decode('Nº Ponto'), 1, 0, 'C', true);
+$pdf->Cell(100, 10, utf8_decode('Nome do Ponto'), 1, 0, 'C', true);
+$pdf->Cell(50, 10, utf8_decode('Qtd. Alunos'), 1, 1, 'C', true);
+
+/* =========================
+   DADOS
+========================= */
+$pdf->SetFont('Arial', '', 10);
+$pdf->SetTextColor(60, 60, 60);
+
+$fill = false;
+
+if (empty($linhas)) {
+    $pdf->Cell(190, 10, utf8_decode('Nenhum ponto cadastrado.'), 1, 1, 'C');
+} else {
+    foreach ($linhas as $l) {
+
+        // zebra (linhas alternadas)
+        $pdf->SetFillColor(250, 250, 250);
+
+        $pdf->Cell(40, 10, $l['numero_ponto'], 1, 0, 'C', $fill);
+        $pdf->Cell(100, 10, utf8_decode($l['nome_ponto']), 1, 0, 'L', $fill);
+        $pdf->Cell(50, 10, $l['qtd_alunos'], 1, 1, 'C', $fill);
+
+        $fill = !$fill;
+    }
+}
+
+/* =========================
+   TOTAL FINAL
+========================= */
+$pdf->Ln(6);
+$pdf->SetFont('Arial', 'B', 11);
+$pdf->SetTextColor(30, 30, 30);
+
+$pdf->Cell(
+    0,
+    10,
+    utf8_decode("Total geral: {$total_alunos} aluno(s) em " . count($linhas) . " ponto(s)"),
+    0,
+    1,
+    'C'
+);
+
+// SAÍDA
+$pdf->Output('I', 'alunos_por_ponto.pdf');
+exit();
 ?>
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Alunos por Ponto - Rota Certa</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 40px;
-            background: #fff;
-            color: #222;
-        }
- 
-        .cabecalho {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 3px solid #0b2c5f;
-            padding-bottom: 15px;
-        }
- 
-        .cabecalho h1 {
-            color: #0b2c5f;
-            font-size: 28px;
-            margin: 0 0 5px 0;
-        }
- 
-        .cabecalho p {
-            color: #555;
-            font-size: 14px;
-            margin: 0;
-        }
- 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
- 
-        thead tr {
-            background: #0b2c5f;
-            color: #fff;
-        }
- 
-        thead th {
-            padding: 13px 15px;
-            text-align: left;
-            font-size: 14px;
-        }
- 
-        tbody tr:nth-child(even) {
-            background: #f4f6f9;
-        }
- 
-        tbody tr:hover {
-            background: #e8f1ff;
-        }
- 
-        tbody td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #ddd;
-            font-size: 14px;
-        }
- 
-        .td-qtd {
-            text-align: center;
-            font-weight: bold;
-            color: #0b2c5f;
-        }
- 
-        .rodape {
-            margin-top: 25px;
-            text-align: right;
-            font-size: 13px;
-            color: #555;
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
-        }
- 
-        .btn-imprimir {
-            display: inline-block;
-            margin-bottom: 25px;
-            padding: 12px 28px;
-            background: #ffc107;
-            color: #0b1f3a;
-            font-weight: bold;
-            font-size: 15px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-        }
- 
-        /* Esconde o botão ao imprimir */
-        @media print {
-            .btn-imprimir {
-                display: none;
-            }
- 
-            body {
-                padding: 20px;
-            }
-        }
-    </style>
-</head>
-<body>
- 
-    <button class="btn-imprimir" onclick="window.print()">
-        🖨️ Imprimir / Salvar PDF
-    </button>
- 
-    <div class="cabecalho">
-        <h1>Alunos por Ponto de Embarque</h1>
-        <p>Sistema Rota Certa &nbsp;|&nbsp; Gerado em: <?= date('d/m/Y \à\s H:i') ?></p>
-    </div>
- 
-    <table>
-        <thead>
-            <tr>
-                <th>Nº Ponto</th>
-                <th>Nome do Ponto</th>
-                <th style="text-align:center;">Qtd. Alunos</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (empty($linhas)): ?>
-                <tr>
-                    <td colspan="3" style="text-align:center; color:#888;">
-                        Nenhum ponto cadastrado.
-                    </td>
-                </tr>
-            <?php else: ?>
-                <?php foreach ($linhas as $linha): ?>
-                <tr>
-                    <td><?= htmlspecialchars($linha['numero_ponto']) ?></td>
-                    <td><?= htmlspecialchars($linha['nome_ponto']) ?></td>
-                    <td class="td-qtd"><?= $linha['qtd_alunos'] ?></td>
-                </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </tbody>
-    </table>
- 
-    <div class="rodape">
-        Total geral: <strong><?= $total_alunos ?> aluno(s)</strong> distribuídos em <strong><?= count($linhas) ?> ponto(s)</strong>
-    </div>
- 
-</body>
-</html>
