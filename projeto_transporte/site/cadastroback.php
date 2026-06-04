@@ -1,5 +1,10 @@
 <?php
+
 session_start();
+
+// DEBUG — APAGA DEPOIS
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 if(!isset($_SESSION['email'])){
     header("Location: ../index.php");
@@ -38,6 +43,7 @@ if (!$dadosPontos || $dadosPontos['total'] == 0) {
 
 if(!isset($_POST['nome'])){
     die("Nenhum dado recebido!");
+
 }
 
 
@@ -46,6 +52,8 @@ $nomes = $_POST['nome'];
 $series = $_POST['serie'];
 $cursos = $_POST['curso'];
 $endereco = $_POST['endereco'];
+
+
 
 
 
@@ -146,7 +154,7 @@ if (!empty($resultado_dados) && isset($resultado_dados[0]['lat'])) {
             }
         }
     }
-
+    echo "PASSOU 3<br>";
     // INSERT
     $sql = "
         INSERT INTO aluno
@@ -178,7 +186,7 @@ if (!empty($resultado_dados) && isset($resultado_dados[0]['lat'])) {
 
         )
     ";
-
+echo "PASSOU 4<br>";
     $resultadoInsert = mysqli_query($conexao, $sql);
 
     // MOSTRA ERRO SE DER PROBLEMA

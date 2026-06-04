@@ -56,70 +56,72 @@
             <tbody id="corpoTabela">
 
                 <!-- LINHA MODELO -->
-                <tr class="linha-modelo" style="display:none;">
+            <!-- LINHA MODELO -->
+            <tr class="linha-modelo" style="display:none;">
 
-                    <td>
+                <td>
 
-                        <input 
-                     type="text"
-                     name="nome[]"
-                     disabled
+                    <input 
+                        type="text"
+                        name="nome[]"
+                        disabled
+                    >
+
+                </td>
+
+                <td>
+
+                    <select name="serie[]" disabled>
+
+                        <option value="1">1º</option>
+                        <option value="2">2º</option>
+                        <option value="3">3º</option>
+
+                    </select>
+
+                </td>
+
+                <td>
+
+                    <select name="curso[]" disabled>
+
+                        <option value="Informatica">Informática</option>
+                        <option value="DS">Desenvolvimento de Sistemas</option>
+                        <option value="Enfermagem">Enfermagem</option>
+                        <option value="Administracao">Administração</option>
+
+                    </select>
+
+                </td>
+
+                <td>
+
+                    <input 
+                        type="text"
+                        name="endereco[]"
+                        disabled
+                    >
+
+                </td>
+
+                <td class="coluna-acoes">
+
+                    <div class="lista-acoes">
+
+                        <button 
+                            type="button"
+                            class="btn-remover"
                         >
 
-                    </td>
+                            Remover
 
-                    <td>
+                        </button>
 
-                        <select name="serie[]">
+                    </div>
 
-                            <option value="1">1º</option>
-                            <option value="2">2º</option>
-                            <option value="3">3º</option>
+                </td>
 
-                        </select>
-
-                    </td>
-
-                    <td>
-
-                        <select name="curso[]">
-
-                            <option value="Informatica">Informática</option>
-                            <option value="DS">Desenvolvimento de Sistemas</option>
-                            <option value="Enfermagem">Enfermagem</option>
-                            <option value="Administracao">Administração</option>
-
-                        </select>
-
-                    </td>
-
-                    <td>
-
-                        <input 
-                     type="text"
-                     name="endereco[]" disabled
-                        >
-
-                    </td>
-
-                    <td class="coluna-acoes">
-
-                        <div class="lista-acoes">
-
-                            <button 
-                                type="button"
-                                class="btn-remover"
-                            >
-
-                                Remover
-
-                            </button>
-
-                        </div>
-
-                    </td>
-
-                </tr>
+            </tr>
 
             </tbody>
 

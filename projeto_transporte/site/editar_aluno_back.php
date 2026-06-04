@@ -40,7 +40,7 @@ $idPontoMaisProximo = $alunoAntigo['id_ponto'];
 if ($alunoAntigo['endereco'] !== $endereco_novo) {
     
     $endereco_filtrado = $endereco_novo . ", Crateús, Ceará, Brasil";
-    $url_api = "https://openstreetmap.org" . urlencode($endereco_filtrado) . "&format=json&limit=1";
+    $url_api = "nominatim.openstreetmap.org/search?q=" . urlencode($endereco_filtrado) . "&format=json&limit=1";
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url_api);
