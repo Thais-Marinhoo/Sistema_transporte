@@ -35,7 +35,6 @@ include 'rotas_back.php';
 <body>
 
 <?php include "menu.php"; ?>
-<?php include 'alertas.php'; ?>
 
 <div class="lista-alunos-page">
     <div class="lista-alunos-container">
