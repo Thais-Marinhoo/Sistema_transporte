@@ -46,66 +46,34 @@ window.onload = function(){
     const form = document.getElementById('formCA');
 
     if (form) {
-        form.addEventListener('submit', async function(event) {
+        form.addEventListener('submit', function(event) {
             event.preventDefault();
 
-            // remove mensagem anterior
+            // Remove mensagem de erro anterior
             const erroAntigo = document.getElementById('erro-dinamico-js');
             if (erroAntigo) erroAntigo.remove();
 
             let temErroCampo = false;
-            let temErroEndereco = false;
 
-            let linhasVisiveis = form.querySelectorAll('tr:not(.linha-modelo)');
+            let linhasAtivas = corpoTabela.querySelectorAll('tr:not(.linha-modelo)');
 
-            for (let linha of linhasVisiveis) {
-
-                let inputNome = linha.querySelector('input[name="nome[]"]');
+            for (let linha of linhasAtivas) {
+                let inputNome     = linha.querySelector('input[name="nome[]"]');
                 let inputEndereco = linha.querySelector('input[name="endereco[]"]');
 
+                // Destaca campos vazios visualmente
                 [inputNome, inputEndereco].forEach(input => {
                     if (input && input.value.trim() === '') {
                         temErroCampo = true;
+                        input.style.border = "2px solid red";
+                        input.style.backgroundColor = "#ffe6e6";
                     }
                 });
-
-                if (inputEndereco && inputEndereco.value.trim() !== '') {
-
-                    let enderecoFiltrado = inputEndereco.value.trim() + ", Crateús, Ceará, Brasil";
-                    let urlApi = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(enderecoFiltrado)}&format=json&limit=1`;
-
-                    try {
-                        let resposta = await fetch(urlApi);
-                        let dados = await resposta.json();
-
-                        if (!dados || dados.length === 0 || !dados[0].lat) {
-                            temErroEndereco = true;
-
-                            inputEndereco.style.border = "2px solid red";
-                            inputEndereco.style.backgroundColor = "#ffe6e6";
-                        }
-
-                    } catch (error) {
-                        console.error(error);
-                        temErroEndereco = true;
-                    }
-                }
             }
 
-            // 🔥 MENSAGEM ESTILO alertas.php
-            if (temErroCampo || temErroEndereco) {
-
-                let mensagem = 'Por favor, preencha todos os campos. Não deixe linhas em branco.';
-
-                if (temErroEndereco && !temErroCampo) {
-                    mensagem = 'Um ou mais endereços não foram localizados em Crateús. Verifique a ortografia.';
-                } else if (temErroCampo && temErroEndereco) {
-                    mensagem = 'Verifique os campos destacados: há informações em branco e endereços inválidos.';
-                }
-
+            if (temErroCampo) {
                 const caixaErro = document.createElement('div');
                 caixaErro.id = 'erro-dinamico-js';
-
                 caixaErro.style.cssText =
                     "display:flex; align-items:center; gap:12px;" +
                     "background-color:#fff5f5; border-left:4px solid #e53e3e;" +
@@ -115,19 +83,20 @@ window.onload = function(){
                 caixaErro.innerHTML =
                     '<span class="material-icons" style="color:#e53e3e; font-size:24px;">error_outline</span>' +
                     '<p style="margin:0; color:#c53030; font-size:0.95rem; line-height:1.5; font-weight:500;">' +
-                    mensagem + '</p>';
+                    'Por favor, preencha todos os campos. Não deixe linhas em branco.</p>';
 
                 form.parentNode.insertBefore(caixaErro, form);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
 
             } else {
+                // Tudo ok — envia direto para o PHP validar o endereço via Geoapify
                 form.submit();
             }
         });
     }
 };
 
-// limpar URL
+// Limpar status da URL após exibição do alerta
 if (window.location.search.includes('status=')) {
     window.history.replaceState({}, document.title, window.location.pathname);
 }
