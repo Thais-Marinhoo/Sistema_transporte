@@ -36,44 +36,43 @@ if (isset($_POST['salvar_ponto'])) {
         exit();
     }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////    
-// ... (Seu código existente recebe as variáveis do formulário, ex: $endereco = $_POST['endereco'];)
+    // ---------------------------------------------------------------
+    // Geocodificação via Geoapify (mesma API do cadastroback.php)
+    // ---------------------------------------------------------------
+    $API_KEY = "172ff5e777874a13b995e244562a96a5";
+    $endereco_busca = $endereco . ", Crateús, Ceará, Brasil";
+    $url_api = "https://api.geoapify.com/v1/geocode/search"
+             . "?text="  . urlencode($endereco_busca)
+             . "&bias=proximity:-40.6617,-4.9782"
+             . "&limit=1"
+             . "&apiKey=" . $API_KEY;
 
-// 1. Prepara o endereço garantindo que a busca foque em Crateús
-$endereco_filtrado = $endereco . ", Crateús, Ceará, Brasil";
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url_api);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $resposta_texto = curl_exec($ch);
+    curl_close($ch);
 
-// ... seu código de preparar o endereço filtrado ...
+    $resultado_dados = json_decode($resposta_texto, true);
 
-$url_api = "https://nominatim.openstreetmap.org/search?q=" . urlencode($endereco_filtrado) . "&format=json&limit=1";
+    $latitude  = null;
+    $longitude = null;
 
-// Nova forma de disparar usando cURL (ignora travas do file_get_contents no Windows)
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $url_api);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_USERAGENT, "SistemaTransporteCrateus/1.0 (heitor.almeida2@aluno.ce.gov.br)");
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Ignora erros de certificado SSL locais do XAMPP
+    // GeoJSON retorna [longitude, latitude] — ordem invertida!
+    // confidence >= 0.4 garante que a API realmente achou o endereço (não apenas chutou)
+    if (!empty($resultado_dados) && isset($resultado_dados['features'][0]['geometry']['coordinates'])) {
+        $confidence = (float) ($resultado_dados['features'][0]['properties']['rank']['confidence'] ?? 0);
+        if ($confidence >= 0.4) {
+            $longitude = (float) $resultado_dados['features'][0]['geometry']['coordinates'][0];
+            $latitude  = (float) $resultado_dados['features'][0]['geometry']['coordinates'][1];
+        }
+    }
 
-$resposta_texto = curl_exec($ch);
-curl_close($ch);
-
-$resultado_dados = json_decode($resposta_texto, true);
-
-// Verifica se a API encontrou o local com sucesso
-if (!empty($resultado_dados) && isset($resultado_dados[0]['lat'])) {
-    
-    // Sucesso! Aqui estão as duas variáveis numéricas prontinhas que você precisava
-    $latitude = (float) $resultado_dados[0]['lat'];
-    $longitude = (float) $resultado_dados[0]['lon'];
-    
-    // ... (A partir daqui você coloca o seu código de INSERT no banco de dados)
-    // Exemplo: usar $latitude e $longitude na sua query do banco.
-
-} else {
-    // Caso o endereço digitado seja inválido ou inexistente em Crateús
-    header("Location: telarotas.php?status=endereco");
-    exit; // Interrompe para não salvar dados vazios no banco
-}
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    if ($latitude === null || $longitude === null) {
+        header("Location: telarotas.php?status=endereco");
+        exit();
+    }
 
     $stmt = $conexao->prepare("INSERT INTO ponto (numero_ponto, nome_ponto, endereco, latitude, longitude) VALUES (?, ?, ?, ?, ?)");
     $stmt->bind_param("issdd", $numero_ponto, $nome_ponto, $endereco, $latitude, $longitude);

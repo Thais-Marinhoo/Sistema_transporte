@@ -16,6 +16,7 @@ $mensagens_erro = [
 // 2. Dicionário de todas as mensagens de SUCESSO do sistema
 $mensagens_sucesso = [
     'sucesso_p'  => 'Ponto cadastrado com sucesso!',
+    'sucesso_peditar'  => 'Ponto editado com sucesso!',
     'sucesso_pdeletado' => 'Ponto deletado com sucesso!',
     'sucesso_rdeletada' => 'Rota deletada com sucesso!',
     'sucesso_aluno' => 'Aluno cadastrado com sucesso!',
