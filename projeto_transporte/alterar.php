@@ -1,22 +1,33 @@
 <?php
+session_start();
 include('conexao.php');
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $email = mysqli_real_escape_string($conexao, $_POST['email_reset']);
-    $nova_senha = $_POST['nova_senha']; // Senha pura vinda do formulário
+if(!isset($_SESSION['email_ok'])){
+    die("Acesso inválido");
+}
 
+$email = $_SESSION['email_ok'];
 
-    $senha_md5 = md5($nova_senha);
+if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
-    // Query para atualizar (pesquisa no banco)
-    $query = "UPDATE users SET senha = '$senha_md5' WHERE login = '$email'";
-    
-    if (mysqli_query($conexao, $query)) {
-        // Redireciona de volta com uma mensagem de sucesso
-        header('Location: index.php?status=sucesso');
-    } else {
-        header('Location: index.php?status=erro');
-    }
+    $nova_senha = $_POST['nova_senha'];
+
+    mysqli_query($conexao,
+        "UPDATE users 
+         SET senha = SHA2('$nova_senha',256),
+             codigo_recuperacao = NULL
+         WHERE login='$email'"
+    );
+
+    unset($_SESSION['email_ok']);
+
+    header("Location: index.php?status=sucesso");
     exit();
 }
 ?>
+
+<!-- FORM DA NOVA SENHA -->
+<form method="POST">
+    <input type="password" name="nova_senha" placeholder="Nova senha" required>
+    <button type="submit">Salvar senha</button>
+</form>
