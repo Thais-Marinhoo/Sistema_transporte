@@ -26,12 +26,12 @@ $mail = new PHPMailer(true);
 $mail->isSMTP();
 $mail->Host = 'smtp.gmail.com';
 $mail->SMTPAuth = true;
-$mail->Username = 'nayra.sousaa16@gmail.com';
-$mail->Password = 'qeui wuww eukf jyfz';
+$mail->Username = 'rotacerta321@gmail.com';
+$mail->Password = 'xysk meku prij qblw';
 $mail->SMTPSecure = 'tls';
 $mail->Port = 587;
 
-$mail->setFrom('nayra.sousaa16@gmail.com', 'Sistema');
+$mail->setFrom('rotacerta321@gmail.com', 'Sistema');
 $mail->addAddress($email);
 
 $mail->isHTML(true);

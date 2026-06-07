@@ -158,14 +158,6 @@ body{
     box-sizing:border-box;
 }
 
-.topo-acoes{
-    margin-top:20px;
-    display:flex;
-    gap:15px;
-    align-items:center;
-    flex-wrap:wrap;
-}
-
 .quantidade-box{
     display:flex;
     align-items:center;
@@ -178,34 +170,39 @@ body{
     border:1px solid #ddd;
     border-radius:8px;
     padding:0 10px;
-}
-
-.btn-add{
+}.btn-add{
     background:#17a2b8;
     color:#fff;
-    padding:12px 20px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    transition:0.3s;
-}
-
-.btn-add:hover{
-    transform:translateY(-2px);
-}
-
-.btn-salvar{
-    background:#ffc107;
-    color:#000;
-    padding:12px 20px;
+    padding:10px 14px;
     border:none;
     border-radius:8px;
     cursor:pointer;
     font-weight:600;
-    transition:0.3s;
+    font-size:14px;
+    transition:0.25s;
+    white-space:nowrap;
+}
+
+.btn-add:hover{
+    background:#138496;
+    transform:translateY(-2px);
+}
+
+.btn-salvar{
+    background:#28a745;
+    color:#fff;
+    padding:10px 14px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:700;
+    font-size:14px;
+    transition:0.25s;
+    white-space:nowrap;
 }
 
 .btn-salvar:hover{
+    background:#218838;
     transform:translateY(-2px);
 }
 
@@ -213,14 +210,40 @@ body{
     background:#dc3545;
     color:#fff;
     border:none;
-    padding:10px 15px;
+    padding:8px 12px;
     border-radius:8px;
     cursor:pointer;
-    transition:0.3s;
+    font-weight:600;
+    transition:0.2s;
 }
 
 .btn-remover:hover{
-    opacity:0.9;
+    background:#c82333;
+}
+#quantidadeLinhas{
+    width:80px;
+    height:42px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    padding:0 10px;
+    outline:none;
+}
+.tabela-alunos td:last-child{
+    text-align:center;
+    vertical-align:middle;
+}
+button.btn-salvar{
+    background:#ffc107 !important;
+    color:#fff !important;
+    padding:10px 14px !important;
+    font-size:14px !important;
+    font-weight:700 !important;
+    border:none !important;
+    border-radius:8px !important;
+    cursor:pointer !important;
+    width:auto !important;
+    height:auto !important;
+    white-space:nowrap !important;
 }
 
 /* =====================================
