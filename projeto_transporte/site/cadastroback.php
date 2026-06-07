@@ -12,9 +12,6 @@ if(!isset($_SESSION['email'])){
 
 include '../conexao.php';
 
-// =====================================================================
-// Fórmula de Haversine — calcula distância em km entre dois pontos GPS
-// =====================================================================
 function Haversine($lat1, $lon1, $lat2, $lon2) {
     $raioTerra = 6371;
     $vLat = deg2rad($lat2 - $lat1);
@@ -26,9 +23,9 @@ function Haversine($lat1, $lon1, $lat2, $lon2) {
     return $raioTerra * $c;
 }
 
-// =====================================================================
-// Verifica se existem pontos cadastrados (obrigatório para vincular aluno)
-// =====================================================================
+// Tipos de resultado aceitos pela Geoapify (rejeita cidade/região genérica)
+$TIPOS_VALIDOS = ['street', 'amenity', 'building', 'suburb', 'district'];
+
 $sqlVerificaPontos = "SELECT COUNT(*) as total FROM ponto";
 $resPontos         = mysqli_query($conexao, $sqlVerificaPontos);
 $dadosPontos       = mysqli_fetch_assoc($resPontos);
@@ -39,7 +36,8 @@ if (!$dadosPontos || $dadosPontos['total'] == 0) {
 }
 
 if(!isset($_POST['nome'])){
-    die("Nenhum dado recebido!");
+    header("Location: tela.cadastro.php?status=falta_info");
+    exit();
 }
 
 $nomes    = $_POST['nome'];
@@ -49,9 +47,6 @@ $endereco = $_POST['endereco'];
 
 $API_KEY = "172ff5e777874a13b995e244562a96a5";
 
-// =====================================================================
-// Loop — processa cada aluno enviado no formulário
-// =====================================================================
 for($i = 0; $i < count($nomes); $i++){
 
     $nome      = trim($nomes[$i]);
@@ -59,16 +54,11 @@ for($i = 0; $i < count($nomes); $i++){
     $curso     = trim($cursos[$i]);
     $enderecos = trim($endereco[$i]);
 
-    // Bloqueia se algum campo estiver vazio
     if($nome == "" || $serie == "" || $curso == "" || $enderecos == ""){
         header("Location: tela.cadastro.php?status=falta_info");
         exit();
     }
 
-    // ---------------------------------------------------------------
-    // Geocodificação via Geoapify
-    // bias=proximity força a busca em torno do centro de Crateús-CE
-    // ---------------------------------------------------------------
     $endereco_busca = $enderecos . ", Crateús, Ceará, Brasil";
     $url_api = "https://api.geoapify.com/v1/geocode/search"
              . "?text="  . urlencode($endereco_busca)
@@ -88,13 +78,16 @@ for($i = 0; $i < count($nomes); $i++){
     $latitude  = null;
     $longitude = null;
 
-    // GeoJSON retorna [longitude, latitude] — ordem invertida!
-    // confidence >= 0.4 garante que a API realmente achou o endereço (não apenas chutou)
-    if (!empty($resultado_dados) && isset($resultado_dados['features'][0]['geometry']['coordinates'])) {
-        $confidence = (float) ($resultado_dados['features'][0]['properties']['rank']['confidence'] ?? 0);
-        if ($confidence >= 0.4) {
-            $longitude = (float) $resultado_dados['features'][0]['geometry']['coordinates'][0];
-            $latitude  = (float) $resultado_dados['features'][0]['geometry']['coordinates'][1];
+    if (!empty($resultado_dados) && isset($resultado_dados['features'][0])) {
+        $feature    = $resultado_dados['features'][0];
+        $confidence = (float) ($feature['properties']['rank']['confidence'] ?? 0);
+        $tipo       = $feature['properties']['result_type'] ?? '';
+
+        // Aceita só se tiver confiança >= 0.4 E for um tipo específico (rua, ponto, bairro)
+        // Rejeita resultados genéricos de cidade/estado que a API chuta quando não acha nada
+        if ($confidence >= 0.4 && in_array($tipo, $TIPOS_VALIDOS)) {
+            $longitude = (float) $feature['geometry']['coordinates'][0];
+            $latitude  = (float) $feature['geometry']['coordinates'][1];
         }
     }
 
@@ -103,25 +96,18 @@ for($i = 0; $i < count($nomes); $i++){
         exit();
     }
 
-    // ---------------------------------------------------------------
-    // Verifica se o aluno já está cadastrado pelo nome
-    // ---------------------------------------------------------------
     $nomeEsc     = mysqli_real_escape_string($conexao, $nome);
     $sqlVerifica = "SELECT id_aluno FROM aluno WHERE nome = '$nomeEsc'";
     $resultado   = mysqli_query($conexao, $sqlVerifica);
 
     if($resultado && mysqli_num_rows($resultado) > 0){
-        continue; // Pula duplicatas sem parar o loop
+        continue;
     }
 
-    // ---------------------------------------------------------------
-    // Encontra o ponto de embarque mais próximo usando Haversine
-    // ---------------------------------------------------------------
     $idPontoMaisProximo = "NULL";
     $menorDistancia     = 999999;
-
-    $sqlPontos       = "SELECT id_ponto, latitude, longitude FROM ponto";
-    $resultadoPontos = mysqli_query($conexao, $sqlPontos);
+    $sqlPontos          = "SELECT id_ponto, latitude, longitude FROM ponto";
+    $resultadoPontos    = mysqli_query($conexao, $sqlPontos);
 
     if ($resultadoPontos && mysqli_num_rows($resultadoPontos) > 0) {
         while ($ponto = mysqli_fetch_assoc($resultadoPontos)) {
@@ -133,9 +119,6 @@ for($i = 0; $i < count($nomes); $i++){
         }
     }
 
-    // ---------------------------------------------------------------
-    // INSERT no banco de dados
-    // ---------------------------------------------------------------
     $sql = "
         INSERT INTO aluno (nome, endereco, serie, curso, latitude, longitude, id_ponto)
         VALUES (
@@ -152,10 +135,11 @@ for($i = 0; $i < count($nomes); $i++){
     $resultadoInsert = mysqli_query($conexao, $sql);
 
     if(!$resultadoInsert){
-        die("Erro no banco: " . mysqli_error($conexao));
+        header("Location: tela.cadastro.php?status=erro_banco");
+        exit();
     }
 
-} // fim do loop
+}
 
 header("Location: lista.alunos.php?status=sucesso_aluno");
 exit();

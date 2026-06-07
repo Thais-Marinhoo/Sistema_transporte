@@ -10,20 +10,22 @@ $mensagens_erro = [
     'sem_pontos' => 'Não é possível cadastrar um aluno sem pontos cadastrados no sistema. Cadastre um ponto antes.',
     'erro_pdeletar' => 'Não é possível deletar o último ponto do sistema. Cadastre outro ponto antes.',
     'erro_p'     => 'Não é possível cadastrar o ponto. Verifique os dados e tente novamente.',
-    'erro_rdeletada' => 'Não foi possível deletar a rota.'
+    'erro_rdeletada' => 'Não foi possível deletar a rota.',
+    'erro_banco'     => 'Erro interno ao salvar os dados. Tente novamente.',
+    'falta_info'     => 'Preencha todos os campos antes de enviar.'
 ];
 
 // 2. Dicionário de todas as mensagens de SUCESSO do sistema
 $mensagens_sucesso = [
     'sucesso_p'  => 'Ponto cadastrado com sucesso!',
-    'sucesso_peditar'  => 'Ponto editado com sucesso!',
     'sucesso_pdeletado' => 'Ponto deletado com sucesso!',
     'sucesso_rdeletada' => 'Rota deletada com sucesso!',
     'sucesso_aluno' => 'Aluno cadastrado com sucesso!',
     'sucesso_edicao' => 'Dados do aluno atualizados e rota recalculada com sucesso!',
     'sucesso_exclusao' => 'Aluno removido do sistema com sucesso.',
     'sucesso_ano' => 'Virada de ano concluída! Alunos promovidos e turmas atualizadas.',
-    'sucesso_r' => 'Rota cadastrada com sucesso!'
+    'sucesso_r' => 'Rota cadastrada com sucesso!',
+    'sucesso_peditar' => 'Ponto editado com sucesso!'
 ];
 
 // 3. Renderização Automática do ERRO

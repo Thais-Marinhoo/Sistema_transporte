@@ -7,6 +7,9 @@ if(!isset($_SESSION['email'])){
 
 include '../conexao.php';
 
+// Tipos de resultado aceitos pela Geoapify (rejeita cidade/região genérica)
+$TIPOS_VALIDOS = ['street', 'amenity', 'building', 'suburb', 'district'];
+
 function Haversine($lat1, $lon1, $lat2, $lon2) {
     $raioTerra = 6371;
     $vLat = deg2rad($lat2 - $lat1); $vLon = deg2rad($lon2 - $lon1);
@@ -26,22 +29,16 @@ $curso         = mysqli_real_escape_string($conexao, trim($_POST['curso']));
 $endereco_novo = trim($_POST['endereco']);
 $endereco_esc  = mysqli_real_escape_string($conexao, $endereco_novo);
 
-// Busca os dados atuais do aluno no banco para comparar
 $sqlBuscaAntigo = "SELECT endereco, latitude, longitude, id_ponto FROM aluno WHERE id_aluno = $id";
 $resAntigo      = mysqli_query($conexao, $sqlBuscaAntigo);
 $alunoAntigo    = mysqli_fetch_assoc($resAntigo);
 
-// Valores padrão — preserva os dados salvos caso o endereço não tenha mudado
 $latitude           = $alunoAntigo['latitude'];
 $longitude          = $alunoAntigo['longitude'];
 $idPontoMaisProximo = $alunoAntigo['id_ponto'];
 
-// Só chama a API se o usuário realmente alterou o texto do endereço
 if ($alunoAntigo['endereco'] !== $endereco_novo) {
 
-    // ---------------------------------------------------------------
-    // Geocodificação via Geoapify
-    // ---------------------------------------------------------------
     $API_KEY        = "172ff5e777874a13b995e244562a96a5";
     $endereco_busca = $endereco_novo . ", Crateús, Ceará, Brasil";
     $url_api        = "https://api.geoapify.com/v1/geocode/search"
@@ -62,13 +59,15 @@ if ($alunoAntigo['endereco'] !== $endereco_novo) {
     $lat_nova = null;
     $lon_nova = null;
 
-    // GeoJSON retorna [longitude, latitude] — ordem invertida!
-    // confidence >= 0.4 garante que a API realmente achou o endereço (não apenas chutou)
-    if (!empty($resultado_dados) && isset($resultado_dados['features'][0]['geometry']['coordinates'])) {
-        $confidence = (float) ($resultado_dados['features'][0]['properties']['rank']['confidence'] ?? 0);
-        if ($confidence >= 0.4) {
-            $lon_nova = (float) $resultado_dados['features'][0]['geometry']['coordinates'][0];
-            $lat_nova = (float) $resultado_dados['features'][0]['geometry']['coordinates'][1];
+    if (!empty($resultado_dados) && isset($resultado_dados['features'][0])) {
+        $feature    = $resultado_dados['features'][0];
+        $confidence = (float) ($feature['properties']['rank']['confidence'] ?? 0);
+        $tipo       = $feature['properties']['result_type'] ?? '';
+
+        // Aceita só se tiver confiança suficiente E for tipo específico (não cidade genérica)
+        if ($confidence >= 0.4 && in_array($tipo, $TIPOS_VALIDOS)) {
+            $lon_nova = (float) $feature['geometry']['coordinates'][0];
+            $lat_nova = (float) $feature['geometry']['coordinates'][1];
         }
     }
 
@@ -80,7 +79,6 @@ if ($alunoAntigo['endereco'] !== $endereco_novo) {
     $latitude  = $lat_nova;
     $longitude = $lon_nova;
 
-    // Recalcula o ponto de embarque mais próximo para o novo endereço
     $idPontoMaisProximo = "NULL";
     $menorDistancia     = 999999;
     $sqlPontos          = "SELECT id_ponto, latitude, longitude FROM ponto";
@@ -97,21 +95,20 @@ if ($alunoAntigo['endereco'] !== $endereco_novo) {
     }
 }
 
-// Salva tudo no banco (dados novos ou preservados)
 $sql = "UPDATE aluno SET 
-            nome     = '$nome', 
-            serie    = '$serie', 
-            curso    = '$curso', 
-            endereco = '$endereco_esc', 
-            latitude = '$latitude', 
+            nome      = '$nome', 
+            serie     = '$serie', 
+            curso     = '$curso', 
+            endereco  = '$endereco_esc', 
+            latitude  = '$latitude', 
             longitude = '$longitude', 
-            id_ponto = $idPontoMaisProximo 
+            id_ponto  = $idPontoMaisProximo 
         WHERE id_aluno = $id";
 
 if(mysqli_query($conexao, $sql)){
     header("Location: lista.alunos.php?status=sucesso_edicao");
 } else {
-    die("Erro ao atualizar no banco: " . mysqli_error($conexao));
+    header("Location: lista.alunos.php?status=erro_banco");
 }
 exit();
 ?>
