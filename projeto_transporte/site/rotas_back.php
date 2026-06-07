@@ -2,26 +2,18 @@
 include_once '../conexao.php';
 session_start();
 
+// Tipos de resultado aceitos pela Geoapify (rejeita cidade/região genérica)
+$TIPOS_VALIDOS = ['street', 'amenity', 'building', 'suburb', 'district'];
 
 // ====================== BUSCAR PONTO PARA EDITAR ======================
 $pontoEditar = null;
 
 if (isset($_GET['editar_ponto'])) {
-
     $id_editar = (int) $_GET['editar_ponto'];
-
-    $stmt = $conexao->prepare("
-        SELECT * 
-        FROM ponto 
-        WHERE id_ponto = ?
-    ");
-
+    $stmt = $conexao->prepare("SELECT * FROM ponto WHERE id_ponto = ?");
     $stmt->bind_param("i", $id_editar);
-
     $stmt->execute();
-
-    $resultado = $stmt->get_result();
-
+    $resultado  = $stmt->get_result();
     $pontoEditar = $resultado->fetch_assoc();
 }
 
@@ -36,16 +28,13 @@ if (isset($_POST['salvar_ponto'])) {
         exit();
     }
 
-    // ---------------------------------------------------------------
-    // Geocodificação via Geoapify (mesma API do cadastroback.php)
-    // ---------------------------------------------------------------
-    $API_KEY = "172ff5e777874a13b995e244562a96a5";
+    $API_KEY        = "172ff5e777874a13b995e244562a96a5";
     $endereco_busca = $endereco . ", Crateús, Ceará, Brasil";
-    $url_api = "https://api.geoapify.com/v1/geocode/search"
-             . "?text="  . urlencode($endereco_busca)
-             . "&bias=proximity:-40.6617,-4.9782"
-             . "&limit=1"
-             . "&apiKey=" . $API_KEY;
+    $url_api        = "https://api.geoapify.com/v1/geocode/search"
+                    . "?text="  . urlencode($endereco_busca)
+                    . "&bias=proximity:-40.6617,-4.9782"
+                    . "&limit=1"
+                    . "&apiKey=" . $API_KEY;
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url_api);
@@ -59,13 +48,14 @@ if (isset($_POST['salvar_ponto'])) {
     $latitude  = null;
     $longitude = null;
 
-    // GeoJSON retorna [longitude, latitude] — ordem invertida!
-    // confidence >= 0.4 garante que a API realmente achou o endereço (não apenas chutou)
-    if (!empty($resultado_dados) && isset($resultado_dados['features'][0]['geometry']['coordinates'])) {
-        $confidence = (float) ($resultado_dados['features'][0]['properties']['rank']['confidence'] ?? 0);
-        if ($confidence >= 0.4) {
-            $longitude = (float) $resultado_dados['features'][0]['geometry']['coordinates'][0];
-            $latitude  = (float) $resultado_dados['features'][0]['geometry']['coordinates'][1];
+    if (!empty($resultado_dados) && isset($resultado_dados['features'][0])) {
+        $feature    = $resultado_dados['features'][0];
+        $confidence = (float) ($feature['properties']['rank']['confidence'] ?? 0);
+        $tipo       = $feature['properties']['result_type'] ?? '';
+
+        if ($confidence >= 0.4 && in_array($tipo, $TIPOS_VALIDOS)) {
+            $longitude = (float) $feature['geometry']['coordinates'][0];
+            $latitude  = (float) $feature['geometry']['coordinates'][1];
         }
     }
 
@@ -88,11 +78,11 @@ if (isset($_POST['salvar_ponto'])) {
 
 // ====================== SALVAR ROTA ======================
 if (isset($_POST['salvar_rota'])) {
-    $nome_rota     = trim($_POST['nome_rota'] ?? '');
-    $motorista_m   = trim($_POST['motorista_m'] ?? '');
-    $motorista_t   = trim($_POST['motorista_t'] ?? '');
-    $status        = trim($_POST['status'] ?? '');
-    $status_tarde  = trim($_POST['terceirizado_secundario'] ?? '');
+    $nome_rota    = trim($_POST['nome_rota']    ?? '');
+    $motorista_m  = trim($_POST['motorista_m']  ?? '');
+    $motorista_t  = trim($_POST['motorista_t']  ?? '');
+    $status       = trim($_POST['status']       ?? '');
+    $status_tarde = trim($_POST['terceirizado_secundario'] ?? '');
 
     $pontos_selecionados = $_POST['pontos'] ?? [];
 
@@ -104,8 +94,7 @@ if (isset($_POST['salvar_rota'])) {
     $conexao->begin_transaction();
 
     try {
-        $stmt = $conexao->prepare("INSERT INTO rota (nome_rota, motorista_m, motorista_t, status, status_tarde) 
-                                   VALUES (?, ?, ?, ?, ?)");
+        $stmt = $conexao->prepare("INSERT INTO rota (nome_rota, motorista_m, motorista_t, status, status_tarde) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("sssss", $nome_rota, $motorista_m, $motorista_t, $status, $status_tarde);
         $stmt->execute();
         $id_rota = $conexao->insert_id;
@@ -128,11 +117,10 @@ if (isset($_POST['salvar_rota'])) {
     exit();
 }
 
-// ====================== DELETAR ======================
+// ====================== DELETAR PONTO ======================
 if (isset($_GET['deletar_ponto'])) {
     $id = (int)$_GET['deletar_ponto'];
 
-    // 1. FUNÇÃO INTERNA HAVERSINE (Apenas para uso rápido aqui dentro)
     $haversine = function($lat1, $lon1, $lat2, $lon2) {
         $raioTerra = 6371;
         $vLat = deg2rad($lat2 - $lat1);
@@ -141,50 +129,44 @@ if (isset($_GET['deletar_ponto'])) {
         return $raioTerra * (2 * atan2(sqrt($a), sqrt(1 - $a)));
     };
 
-    // 2. BUSCA TODOS OS OUTROS PONTOS DISPONÍVEIS (EXCETO O QUE SERÁ DELETADO)
     $sqlOutrosPontos = "SELECT id_ponto, latitude, longitude FROM ponto WHERE id_ponto != ?";
     $stmtOutros = $conexao->prepare($sqlOutrosPontos);
     $stmtOutros->bind_param("i", $id);
     $stmtOutros->execute();
     $resOutros = $stmtOutros->get_result();
-    
+
     $outrosPontos = [];
     while ($p = $resOutros->fetch_assoc()) {
         $outrosPontos[] = $p;
     }
 
-    // 3. SE NÃO HOUVER OUTRO PONTO NO SISTEMA, BLOQUEIA A DELEÇÃO
-    // Como a coluna é NOT NULL, o aluno não pode ficar sem ponto nenhum
     if (empty($outrosPontos)) {
         header("Location: telarotas.php?status=erro_pdeletar");
         exit();
     }
 
-    // 4. BUSCA TODOS OS ALUNOS QUE USAM O PONTO QUE VAI SER APAGADO
     $sqlAlunosAfetados = "SELECT id_aluno, latitude, longitude FROM aluno WHERE id_ponto = ?";
     $stmtAlunos = $conexao->prepare($sqlAlunosAfetados);
     $stmtAlunos->bind_param("i", $id);
     $stmtAlunos->execute();
     $resAlunos = $stmtAlunos->get_result();
 
-    // 5. ATUALIZA CADA ALUNO AFETADO COM O PRÓXIMO PONTO MAIS PERTO CADASTRADO
     while ($aluno = $resAlunos->fetch_assoc()) {
-        $idAluno = $aluno['id_aluno'];
+        $idAluno  = $aluno['id_aluno'];
         $latAluno = (float)$aluno['latitude'];
         $lonAluno = (float)$aluno['longitude'];
-        
-        $idPontoNovo = null;
+
+        $idPontoNovo    = null;
         $menorDistancia = 999999;
 
         foreach ($outrosPontos as $ponto) {
             $dist = $haversine($latAluno, $lonAluno, (float)$ponto['latitude'], (float)$ponto['longitude']);
             if ($dist < $menorDistancia) {
                 $menorDistancia = $dist;
-                $idPontoNovo = $ponto['id_ponto'];
+                $idPontoNovo    = $ponto['id_ponto'];
             }
         }
 
-        // Salva o novo ponto diretamente para o aluno sair da restrição antiga
         if ($idPontoNovo !== null) {
             $stmtMudaAluno = $conexao->prepare("UPDATE aluno SET id_ponto = ? WHERE id_aluno = ?");
             $stmtMudaAluno->bind_param("ii", $idPontoNovo, $idAluno);
@@ -192,19 +174,19 @@ if (isset($_GET['deletar_ponto'])) {
         }
     }
 
-    // 6. REMOVE O PONTO ANTIGO DA TABELA INTERMEDIÁRIA DE ROTAS
     $stmtUpdateRotas = $conexao->prepare("DELETE FROM rota_ponto WHERE id_ponto = ?");
     $stmtUpdateRotas->bind_param("i", $id);
     $stmtUpdateRotas->execute();
 
-    // 7. AGORA SIM, EXCLUI O PONTO DA TABELA PRINCIPAL COM SEGURANÇA
     $stmt = $conexao->prepare("DELETE FROM ponto WHERE id_ponto = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
+
     header("Location: telarotas.php?status=sucesso_pdeletado");
     exit();
 }
 
+// ====================== DELETAR ROTA ======================
 if (isset($_GET['deletar_rota'])) {
     $id = (int)$_GET['deletar_rota'];
     $conexao->begin_transaction();
@@ -243,11 +225,8 @@ function listarRotas($conexao) {
         ORDER BY r.id_rota DESC";
     return mysqli_query($conexao, $sql);
 }
-///////////////////listar/////////////////////////////////
-
 
 function atualizarAlunos($conexao) {
-    // 1. Função matemática interna para o cálculo de distância
     $haversine = function($lat1, $lon1, $lat2, $lon2) {
         $raioTerra = 6371;
         $vLat = deg2rad($lat2 - $lat1);
@@ -256,9 +235,8 @@ function atualizarAlunos($conexao) {
         return $raioTerra * (2 * atan2(sqrt($a), sqrt(1 - $a)));
     };
 
-    // 2. Busca todos os pontos ativos no banco
-    $sqlPontos = "SELECT id_ponto, latitude, longitude FROM ponto";
-    $resPontos = mysqli_query($conexao, $sqlPontos);
+    $sqlPontos    = "SELECT id_ponto, latitude, longitude FROM ponto";
+    $resPontos    = mysqli_query($conexao, $sqlPontos);
     $pontosAtivos = [];
 
     if ($resPontos && mysqli_num_rows($resPontos) > 0) {
@@ -267,35 +245,31 @@ function atualizarAlunos($conexao) {
         }
     }
 
-    // Se não existirem pontos, interrompe para não quebrar a restrição NOT NULL
     if (empty($pontosAtivos)) {
         return false;
     }
 
-    // 3. Busca todos os alunos cadastrados
     $sqlTodosAlunos = "SELECT id_aluno, latitude, longitude, id_ponto FROM aluno";
-    $resAlunos = mysqli_query($conexao, $sqlTodosAlunos);
+    $resAlunos      = mysqli_query($conexao, $sqlTodosAlunos);
 
     if ($resAlunos && mysqli_num_rows($resAlunos) > 0) {
         while ($aluno = mysqli_fetch_assoc($resAlunos)) {
-            $idAluno = $aluno['id_aluno'];
+            $idAluno      = $aluno['id_aluno'];
             $idPontoAtual = $aluno['id_ponto'];
-            $latAluno = (float)$aluno['latitude'];
-            $lonAluno = (float)$aluno['longitude'];
-            
-            $idPontoMaisProximo = null;
-            $menorDistancia = 999999;
+            $latAluno     = (float)$aluno['latitude'];
+            $lonAluno     = (float)$aluno['longitude'];
 
-            // Encontra o ponto ideal atual
+            $idPontoMaisProximo = null;
+            $menorDistancia     = 999999;
+
             foreach ($pontosAtivos as $ponto) {
                 $dist = $haversine($latAluno, $lonAluno, (float)$ponto['latitude'], (float)$ponto['longitude']);
                 if ($dist < $menorDistancia) {
-                    $menorDistancia = $dist;
+                    $menorDistancia     = $dist;
                     $idPontoMaisProximo = $ponto['id_ponto'];
                 }
             }
 
-            // 4. Atualiza apenas se houve mudança de ponto
             if ($idPontoMaisProximo !== null && $idPontoMaisProximo != $idPontoAtual) {
                 $sqlUpdateAluno = "UPDATE aluno SET id_ponto = $idPontoMaisProximo WHERE id_aluno = $idAluno";
                 mysqli_query($conexao, $sqlUpdateAluno);
@@ -304,6 +278,4 @@ function atualizarAlunos($conexao) {
     }
     return true;
 }
-
-////////////////////////////////////////////////////
 ?>
