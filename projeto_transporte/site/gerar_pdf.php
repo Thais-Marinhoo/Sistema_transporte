@@ -1,13 +1,11 @@
 <?php
-session_start();
-
-if (!isset($_SESSION['email'])) {
-    header("Location: ../index.php");
-    exit();
-}
 
 include '../conexao.php';
 require_once __DIR__ . '/fpdf19/fpdf.php';
+
+// Recalcula o ponto mais próximo de TODOS os alunos antes de gerar o relatório
+include_once 'rotas_back.php';
+atualizarAlunos($conexao);
 
 // BUSCA DADOS
 $sql = "

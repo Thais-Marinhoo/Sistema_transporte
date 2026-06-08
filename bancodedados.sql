@@ -6,6 +6,8 @@ USE login_transporte;
 -- Criar a tabela de usuários
 CREATE TABLE IF NOT EXISTS users (
     id_usuario INT NOT NULL AUTO_INCREMENT,
+    codigo_recuperacao VARCHAR(6),
+    codigo_expira DATETIME,
     login VARCHAR(100) NOT NULL UNIQUE,
     senha VARCHAR(120) NOT NULL,
     PRIMARY KEY (id_usuario)

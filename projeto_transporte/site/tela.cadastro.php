@@ -5,6 +5,15 @@ if(!isset($_SESSION['email'])){
     header("Location: ../index.php");
     exit();
 }
+
+include '../conexao.php';
+
+// Busca todos os nomes de alunos já cadastrados para validação no JS
+$nomesCadastrados = [];
+$resNomes = mysqli_query($conexao, "SELECT nome FROM aluno");
+while ($row = mysqli_fetch_assoc($resNomes)) {
+    $nomesCadastrados[] = mb_strtolower(trim($row['nome']), 'UTF-8');
+}
 ?>
 
 <!DOCTYPE html>
@@ -27,7 +36,7 @@ if(!isset($_SESSION['email'])){
         <h1 class="titulo">Cadastro de Alunos</h1>
 
         <button type="button" id="btnAlerta" class="btn-alerta">
-            Alertas
+            Informação Importante
         </button>
     </div>
 
@@ -108,18 +117,18 @@ if(!isset($_SESSION['email'])){
             Logo nosso sistema pode nem sempre permitir o cadastro de certos endereços.
             <br><br>
 
-            Exemplo: Dom Fragoso. As ruas da Dom Fragoso não foram cadastradas ainda,
+            Exemplo: Dom Fragoso. As ruas da Dom Fragoso não são cadastradas em API de geolocalização ainda,
             portanto qualquer aluno que more na Residencial Dom Fragoso deverá ser
             cadastrado com o seguinte endereço:
             <strong>R. Homero Fontenele, 1350</strong>.
             <br><br>
 
             Por isso se recomenda usar um local aproximado para se referir ao ponto
-            ou ao local dos alunos.
+            ou ao local dos alunos caso o endereço exato não seja aceito.
             <br><br>
 
             <strong>
-                Sempre digitar os endereços dos alunos e pontos da seguinte forma:
+                Recomenda-se sempre digitar os endereços dos alunos e pontos da seguinte forma:
                 RUA, NÚMERO.
             </strong>
         </p>
@@ -132,29 +141,13 @@ if(!isset($_SESSION['email'])){
 
 </div>
 
+<script>
+// Nomes já cadastrados no banco — usados pelo cadastro.js para bloquear duplicatas
+const NOMES_CADASTRADOS = <?php echo json_encode($nomesCadastrados); ?>;
+</script>
 <script src="cadastro.js?v=1"></script>
 
-<script>
-const modalAlerta = document.getElementById('modalAlerta');
-
-document.getElementById('btnAlerta').addEventListener('click', function() {
-    modalAlerta.style.display = 'flex';
-});
-
-document.getElementById('fecharAlerta').addEventListener('click', function() {
-    modalAlerta.style.display = 'none';
-});
-
-document.querySelector('.fecharModal').addEventListener('click', function() {
-    modalAlerta.style.display = 'none';
-});
-
-window.addEventListener('click', function(e) {
-    if (e.target === modalAlerta) {
-        modalAlerta.style.display = 'none';
-    }
-});
-</script>
+<script src="alerta_botao.js"></script>
 
 </body>
 </html>

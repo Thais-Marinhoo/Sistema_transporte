@@ -28,6 +28,19 @@ if (isset($_POST['salvar_ponto'])) {
         exit();
     }
 
+    // ---------------------------------------------------------------
+    // Verifica se já existe ponto com mesmo número ou mesmo nome
+    // ---------------------------------------------------------------
+    $stmtDup = $conexao->prepare("SELECT id_ponto FROM ponto WHERE numero_ponto = ? OR nome_ponto = ?");
+    $stmtDup->bind_param("is", $numero_ponto, $nome_ponto);
+    $stmtDup->execute();
+    $stmtDup->store_result();
+
+    if ($stmtDup->num_rows > 0) {
+        header("Location: telarotas.php?status=erro_p_duplicado");
+        exit();
+    }
+
     $API_KEY        = "172ff5e777874a13b995e244562a96a5";
     $endereco_busca = $endereco . ", Crateús, Ceará, Brasil";
     $url_api        = "https://api.geoapify.com/v1/geocode/search"

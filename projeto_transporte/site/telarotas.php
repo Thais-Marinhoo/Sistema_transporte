@@ -26,9 +26,14 @@ $rotas  = listarRotas($conexao);
 
 <div class="conteudo">
 
-    <h1 class="titulo">Cadastro de Rotas</h1>
+    <div class="topo-cadastro">
+        <h1 class="titulo">Cadastro de Rotas</h1>
+        <button type="button" id="btnAlerta" class="btn-alerta">
+            Informação Importante
+        </button>
+    </div>
+    
     <p class="sub">Gerencie pontos, ônibus e rotas do sistema.</p>
-
     <!-- Mensagens do Sistema -->
     <?php include 'alertas.php'; ?>
     
@@ -267,7 +272,46 @@ $rotas  = listarRotas($conexao);
 
 </div>
 
+<!-- POPUP ALERTAS -->
+<div id="modalAlerta" class="modal-custom">
+
+    <div class="modal-box">
+
+        <span class="fecharModal">&times;</span>
+
+        <h2>Alertas</h2>
+
+        <p style="line-height:1.8;color:#444;">
+            O sistema não tem uma Geolocalização exata pra todos os lugares de Crateús.
+            Logo nosso sistema pode nem sempre permitir o cadastro de certos endereços.
+            <br><br>
+
+            Exemplo: Dom Fragoso. As ruas da Dom Fragoso não são cadastradas em API de geolocalização ainda,
+            portanto qualquer aluno que more na Residencial Dom Fragoso deverá ser
+            cadastrado com o seguinte endereço:
+            <strong>R. Homero Fontenele, 1350</strong>.
+            <br><br>
+
+            Por isso se recomenda usar um local aproximado para se referir ao ponto
+            ou ao local dos alunos caso o endereço exato não seja aceito.
+            <br><br>
+
+            <strong>
+                Recomenda-se sempre digitar os endereços dos alunos e pontos da seguinte forma:
+                RUA, NÚMERO.
+            </strong>
+        </p>
+
+        <button class="btn-painel" id="fecharAlerta">
+            Entendi
+        </button>
+
+    </div>
+
+</div>
+
 <script src="rotas.js"></script>
+<script src="alerta_botao.js"></script>
 
 </body>
 </html>
