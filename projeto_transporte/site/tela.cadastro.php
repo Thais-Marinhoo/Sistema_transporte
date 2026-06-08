@@ -78,7 +78,7 @@ while ($row = mysqli_fetch_assoc($resNomes)) {
                     <td><input type="text" name="endereco[]" disabled></td>
 
                     <td>
-                        <button type="button" class="btn-remover">Remover</button>
+                        <button type="button" class="btn-remover"><span class="material-icons">delete</span></button>
                     </td>
                 </tr>
 

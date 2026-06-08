@@ -66,7 +66,7 @@ atualizarAlunos($conexao); // Removido para otimizar velocidade
                 <option value="Administracao">Administração</option>
             </select>
 
-            <a href="subir_ano.php" class="link-pdf" onclick="return confirm('Deseja avançar todos os alunos de série? Os alunos do 3º ano serão removidos.')">
+            <a href="subir_ano.php" class="link-pdf" style="text-decoration:none;" onclick="return confirm('Deseja avançar todos os alunos de série? Os alunos do 3º ano serão removidos.')">
                 <button class="lista-btn-pdf">
                     <span class="material-icons">school</span> Subir de Ano
                 </button>
@@ -83,7 +83,7 @@ atualizarAlunos($conexao); // Removido para otimizar velocidade
                         <th>Curso</th>
                         <th>Endereço</th>
                         <th>Ponto Vinculado</th>
-                        <th>Ações</th>
+                        <th style="text-align: center;">Ações</th>
                     </tr>
                 </thead>
                 <tbody>

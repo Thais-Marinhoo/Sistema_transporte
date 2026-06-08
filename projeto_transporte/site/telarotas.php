@@ -116,7 +116,7 @@ $rotas  = listarRotas($conexao);
                 <th>Nº Ponto</th>
                 <th>Nome do Ponto</th>
                 <th>Endereço</th>
-                <th>Ações</th>
+                <th style="text-align: center;">Ações</th>
             </tr>
             <?php mysqli_data_seek($pontos, 0); while ($ponto = mysqli_fetch_assoc($pontos)): ?>
             <tr>
@@ -165,7 +165,7 @@ $rotas  = listarRotas($conexao);
                 <th>Status Principal</th>
                 <th>Status Secundário</th>
                 <th>Pontos</th>
-                <th>Ações</th>
+                <th style="text-align: center;">Ações</th>
             </tr>
             <?php while ($rota = mysqli_fetch_assoc($rotas)): ?>
             <tr>
