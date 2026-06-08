@@ -1,7 +1,7 @@
 <?php
 include '../conexao.php';
 include 'rotas_back.php'; 
-// atualizarAlunos($conexao); // Removido para otimizar velocidade
+atualizarAlunos($conexao); // Removido para otimizar velocidade
 ?>
 
 <!DOCTYPE html>
