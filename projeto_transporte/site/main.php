@@ -9,6 +9,23 @@ include '../conexao.php';
 // Contagens reais do banco (já existentes)
 $totalAlunos = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) as total FROM aluno"))['total'];
 $totalRotas  = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) as total FROM rota"))['total'];
+$result = mysqli_query($conexao, "
+    SELECT
+    (
+        SELECT COUNT(*)
+        FROM rota
+        WHERE status IS NOT NULL
+        AND status <> ''
+    ) +
+    (
+        SELECT COUNT(*)
+        FROM rota
+        WHERE status_tarde IS NOT NULL
+        AND status_tarde <> ''
+    ) AS total_onibus
+");
+
+$totalOnibus = mysqli_fetch_assoc($result)['total_onibus'];
 
 // ========== NOVAS CONSULTAS PARA OS GRÁFICOS ==========
 // 1. Alunos por curso
@@ -214,7 +231,7 @@ while ($row = mysqli_fetch_assoc($resRotaPonto)) {
             <span class="material-icons icon">directions_bus</span>
             <div>
                 <p>Total de ônibus</p>
-                <h2><?= $totalRotas ?></h2>
+                <h2><?= $totalOnibus ?></h2>
             </div>
         </div>
     </div>
