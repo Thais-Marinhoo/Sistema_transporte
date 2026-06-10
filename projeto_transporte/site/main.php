@@ -254,7 +254,7 @@ while ($row = mysqli_fetch_assoc($resRotaPonto)) {
     </div>
     <!-- ========== FIM DOS GRÁFICOS ========== -->
 
-    <div class="mapa"></div>
+
 
 </div>
 
