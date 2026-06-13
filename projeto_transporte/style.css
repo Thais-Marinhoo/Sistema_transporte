@@ -255,3 +255,26 @@ form-box{
     color:white;
     padding-left:10px;
 }
+.titulo-recuperacao{
+    text-align: center;
+    font-weight: bold;
+    color: #000;
+    margin-bottom: 10px;
+}
+
+.texto-info{
+    text-align: center;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.cancelar-link{
+    color: #666;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.cancelar-link:hover{
+    text-decoration: underline;
+}
