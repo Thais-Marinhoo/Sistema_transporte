@@ -51,8 +51,8 @@ CREATE TABLE rota (
     nome_rota VARCHAR(255) NOT NULL,
     motorista_m VARCHAR(255),
     motorista_t VARCHAR(255),
-    status VARCHAR(50) NOT NULL,
-    status_tarde VARCHAR(50) NOT NULL
+    status VARCHAR(50),
+    status_tarde VARCHAR(50),
 );
 
 
@@ -73,3 +73,5 @@ CREATE TABLE relatorio_gerado (
     data_geracao TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     nome_documento VARCHAR(255) NOT NULL
 );
+
+INSERT INTO `users`(`login`, `senha`) VALUES ('rotacerta321@gmail.com', SHA2('123', 256))

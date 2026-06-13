@@ -33,24 +33,18 @@ while ($linha = mysqli_fetch_assoc($resultado)) {
 $pdf = new FPDF();
 $pdf->AddPage();
 
-/* =========================
-   LOGO CENTRALIZADA (TOPO)
-========================= */
 $logo = __DIR__ . '/imagem.jpeg'; // ajuste extensão se necessário
 
 if (file_exists($logo)) {
-    $logoWidth = 25; // tamanho pequeno e moderno
+    $logoWidth = 25; 
     $pageWidth = 210;
     $x = ($pageWidth - $logoWidth) / 2;
 
     $pdf->Image($logo, $x, 8, $logoWidth);
 }
 
-$pdf->Ln(28); // espaço após logo
+$pdf->Ln(28); 
 
-/* =========================
-   TÍTULO MODERNO
-========================= */
 $pdf->SetFont('Arial', 'B', 16);
 $pdf->SetTextColor(30, 30, 30);
 $pdf->Cell(0, 8, utf8_decode('Alunos por Ponto de Embarque'), 0, 1, 'C');
@@ -61,20 +55,15 @@ $pdf->Cell(0, 6, utf8_decode('Sistema Rota Certa • Gerado em ' . date('d/m/Y H
 
 $pdf->Ln(6);
 
-/* =========================
-   CABEÇALHO DA TABELA
-========================= */
 $pdf->SetFont('Arial', 'B', 11);
-$pdf->SetFillColor(245, 246, 250); // cinza claro moderno
+$pdf->SetFillColor(245, 246, 250); 
 $pdf->SetTextColor(40, 40, 40);
 
 $pdf->Cell(40, 10, utf8_decode('Nº Ponto'), 1, 0, 'C', true);
 $pdf->Cell(100, 10, utf8_decode('Nome do Ponto'), 1, 0, 'C', true);
 $pdf->Cell(50, 10, utf8_decode('Qtd. Alunos'), 1, 1, 'C', true);
 
-/* =========================
-   DADOS
-========================= */
+
 $pdf->SetFont('Arial', '', 10);
 $pdf->SetTextColor(60, 60, 60);
 
@@ -85,7 +74,7 @@ if (empty($linhas)) {
 } else {
     foreach ($linhas as $l) {
 
-        // zebra (linhas alternadas)
+       
         $pdf->SetFillColor(250, 250, 250);
 
         $pdf->Cell(40, 10, $l['numero_ponto'], 1, 0, 'C', $fill);
@@ -96,9 +85,6 @@ if (empty($linhas)) {
     }
 }
 
-/* =========================
-   TOTAL FINAL
-========================= */
 $pdf->Ln(6);
 $pdf->SetFont('Arial', 'B', 11);
 $pdf->SetTextColor(30, 30, 30);
@@ -112,7 +98,7 @@ $pdf->Cell(
     'C'
 );
 
-// SAÍDA
+
 $pdf->Output('I', 'alunos_por_ponto.pdf');
 exit();
 ?>
